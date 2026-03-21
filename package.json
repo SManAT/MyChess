@@ -1,0 +1,28 @@
+{
+  "name": "mychessgame",
+  "version": "1.0.0",
+  "description": "Play chess online in school",
+  "scripts": {
+    "start-server": "node ./display-server/server.js",
+    "dev-server": "cd display-server && npm run start",
+    "dev-client": "cd display-client && npm run dev",
+    "watch-backend": "cd display-backend && npm run watch",
+    "build": "cd display-client && npm run build",
+    "install:display-client": "cd display-client && npm install",
+    "install:display-server": "cd display-server && npm install",
+    "install:display-backend": "cd display-backend && npm install",
+    "install": "npm run install:display-client && npm run install:display-server && npm run install:display-backend"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SManAT/MyChess.git"
+  },
+  "author": "PH Noe",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/SManAT/MyChess/issues"
+  },
+  "homepage": "https://github.com/SManAT/MyChess#readme",
+  "devDependencies": {},
+  "dependencies": {}
+}

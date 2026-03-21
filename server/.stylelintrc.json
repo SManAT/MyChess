@@ -1,0 +1,33 @@
+{
+  "rules": {
+    "indentation": null,
+    "string-quotes": "double",
+    "no-duplicate-selectors": true,
+    "color-hex-case": "lower",
+    "color-hex-length": "short",
+    "color-named": "never",
+    "property-no-unknown": true,
+    "declaration-colon-newline-after": null,
+    "at-rule-no-unknown": null,
+    "at-rule-empty-line-before": null,
+    "declaration-empty-line-before": null,
+    "no-descending-specificity": null,
+    "block-closing-brace-newline-after": null,
+    "block-closing-brace-empty-line-before": "never",
+    "block-opening-brace-space-before": "always",
+    "block-opening-brace-space-after": null,
+    "block-closing-brace-space-before": null,
+    "selector-list-comma-newline-after": "always-multi-line",
+    "number-leading-zero": null,
+    "comment-empty-line-before": null,
+    "rule-empty-line-before": null,
+    "no-missing-end-of-source-newline": null,
+    "no-irregular-whitespace": null,
+    "comment-whitespace-inside": null,
+    "no-eol-whitespace": null,
+    "value-list-comma-newline-after": null,
+    "no-invalid-position-at-import-rule": null,
+    "function-comma-space-after": null
+  },
+  "extends": ["stylelint-config-standard"]
+}
