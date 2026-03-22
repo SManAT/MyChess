@@ -5,17 +5,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MyChess</title>
+  <link rel="icon" href="/src/public/favicon.png">
 </head>
 
 <body>
-
   <div class="session">
     <div class="form">
       <div class="left">
-        logo
+        <img src="/src/public/logo.jpg" />
       </div>
       <form id="login_form" action="secured/auth.php" method="POST" class="log-in" autocomplete="off">
-        <h4>ZID <span>Inventar</span></h4>
+        <h4>Schach <span>Server</span></h4>
         <div class="floating-label">
           <input placeholder="Username" name="username" id="username" autocomplete="off">
         </div>
@@ -40,11 +40,22 @@
             </svg>
           </div>
         </div>
-        <button type="submit">Anmelden</button>
+        <button type="submit" class="login">Anmelden</button>
       </form>
     </div>
 
-    <script type="module" src="/src/main.js"></script>
+    <div class="alert alert-primary mt-1" role="alert">
+      <ul>
+        <li>fdgdfg</li>
+        <li>fdgdfg</li>
+      </ul>
+    </div>
+    <div>
+      <i class="bi bi-c-circle"></i> Mag. Stefan Hagmann
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
 </body>
 
 </html>

@@ -84,7 +84,7 @@ a.discrete {
   }
 }
 
-button {
+button.login {
   width: auto;
   min-width: 100px;
   border-radius: 24px;
@@ -272,6 +272,13 @@ $displacement: 3px;
     border-top-left-radius: 4px;
     border-bottom-left-radius: 4px;
     background-size: cover;
+
+    overflow: hidden;
+
+    img {
+      height: 100%;
+      width: auto;
+    }
 
     @include media.xs {
       width: 100px;
