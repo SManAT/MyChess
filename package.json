@@ -22,7 +22,5 @@
   "bugs": {
     "url": "https://github.com/SManAT/MyChess/issues"
   },
-  "homepage": "https://github.com/SManAT/MyChess#readme",
-  "devDependencies": {},
-  "dependencies": {}
+  "homepage": "https://github.com/SManAT/MyChess#readme"
 }

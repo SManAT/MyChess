@@ -1,4 +1,5 @@
-import "./style.css";
+import "@scss/login.scss";
+
 import socketManager from "./utils/socket.js";
 import { ChessBoard } from "./components/ChessBoard.js";
 import { GameLobby } from "./components/GameLobby.js";
