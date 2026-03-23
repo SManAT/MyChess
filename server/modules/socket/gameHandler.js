@@ -1,9 +1,9 @@
-const Game = require("../src/Game")
+const Game = require("../../game/ChessGame")
 
 const games = new Map()
 const players = new Map()
 
-const logger = require("./src/logger").logger
+const logger = require("../logger").logger
 
 function gameHandler(io) {
   io.on("connection", async (socket) => {

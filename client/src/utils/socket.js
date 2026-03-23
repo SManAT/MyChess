@@ -1,5 +1,7 @@
 import { io } from "socket.io-client";
 
+const logger = require("./logger").logger;
+
 class SocketManager {
   constructor() {
     this.socket = null;
@@ -7,16 +9,18 @@ class SocketManager {
   }
 
   connect() {
-    this.socket = io("http://localhost:3001");
+    let server = import.meta.env.VITE_SERVER_URL;
+    let port = import.meta.env.VITE_SERVER_PORT;
+    this.socket = io(`http://${server}:${port}`);
 
     this.socket.on("connect", () => {
       this.connected = true;
-      console.log("Connected to server");
+      logger.info("Connected to server");
     });
 
     this.socket.on("disconnect", () => {
       this.connected = false;
-      console.log("Disconnected from server");
+      logger.info("Disconnected from server");
     });
 
     return this.socket;
