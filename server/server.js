@@ -6,6 +6,8 @@ const gameHandler = require("./modules/socket/gameHandler")
 const DBINit = require("./modules/dbInit")
 const path = require("path")
 
+const router = require("./modules/routes.js")
+
 // load .env from root dir
 require("dotenv").config({ path: path.join(__dirname, ".env") })
 
@@ -23,10 +25,8 @@ app.use(cors())
 
 app.use(express.json())
 
-// Basic route
-app.get("/health", (req, res) => {
-  res.json({ status: "Server running" })
-})
+//routes, mount as app middleware
+app.use("/", router)
 
 //Database init
 DBINit()

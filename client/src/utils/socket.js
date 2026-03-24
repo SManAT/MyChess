@@ -11,7 +11,17 @@ class SocketManager {
   connect() {
     let server = import.meta.env.VITE_SERVER_URL;
     let port = import.meta.env.VITE_SERVER_PORT;
-    this.socket = io(`http://${server}:${port}`);
+    this.socket = io(`http://${server}:${port}`, {
+      auth: {
+        username: sessionStorage.getItem("username"),
+        userId: sessionStorage.getItem("userId"),
+        token: sessionStorage.getItem("authToken"),
+        timestamp: Date.now(),
+      },
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionAttempts: 5,
+    });
 
     this.socket.on("connect", () => {
       this.connected = true;

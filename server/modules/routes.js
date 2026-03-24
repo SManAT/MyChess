@@ -1,0 +1,36 @@
+var express = require("express")
+var router = express.Router()
+
+//const { clientLogin, authenticateToken } = require("../middleware/JWT.js")
+
+router.post("/login", async (req, res) => {
+  const { username, password } = req.body
+
+  const payload = {
+    client: client,
+    location: location,
+  }
+  // The Important Part to auth
+  const token = jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: "8h",
+  })
+  // send cookie to client
+  logger.info("Authenticated, token sent to " + client + " ...")
+
+  return res.status(200).json({
+    message: "Login successful 😊👌",
+    token,
+  })
+})
+
+// middleware routes
+/*
+router.post("/register", checkMySQLDataReady, authenticateToken, clientService.registerClient)
+router.post("/getinfos", checkMySQLDataReady, authenticateToken, clientService.getInfos)
+router.post("/ping", checkMySQLDataReady, authenticateToken, clientService.Ping)
+
+router.post("/getpage", checkMySQLDataReady, authenticateToken, clientService.getPage)
+router.post("/lockClient", checkMySQLDataReady, authenticateToken, clientService.lockClient)
+router.post("/sendFile2Me", checkMySQLDataReady, authenticateToken, clientService.sendFile)
+*/
+module.exports = router

@@ -4,7 +4,12 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 import $ from "jquery";
+import axios from "axios";
 window.$ = $;
+window.axios = axios;
+
+// axios define Server URL
+axios.defaults.baseURL = import.meta.env.VITE_SERVER_URL;
 
 $(function () {
   $("#username").trigger("focus");
@@ -14,31 +19,27 @@ $(function () {
 
     const formData = new FormData(e.target);
     const loginData = {
-      email: formData.get("username"),
+      username: formData.get("username"),
       password: formData.get("password"),
     };
 
     //Debug
     window.location.href = "/chess.html";
     console.log("JWT noch offen!!");
-    /*
+
+    // Store data that persists even after browser restart
+    localStorage.setItem("username", loginData.username);
+
     // JWT to Server
-    $.ajax({
-      url: "/api/login",
-      method: "POST",
-      contentType: "application/json",
-      data: JSON.stringify(loginData),
-    })
-      .done(function (result) {
+
+    let data = JSON.stringify(loginData);
+    await axios.post("/login", data).then((response) => {
+      if (response.data?.authenticated) {
         // Success
-        localStorage.setItem("authToken", result.token);
+        //localStorage.setItem("authToken", result.token);
         window.location.href = "/dashboard";
-      })
-      .fail(function (xhr) {
-        // Error
-        const error = xhr.responseJSON || {};
-        alert(error.message || "Login failed");
-      });
-      */
+        return;
+      }
+    });
   });
 });
