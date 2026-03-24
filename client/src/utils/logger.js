@@ -1,58 +1,66 @@
 /**
- * Logger configuration using Winston with single file rotation by size.
+ * Browser-compatible logger
  */
 
-const winston = require("winston")
-const path = require("path")
+// Log levels
+const LOG_LEVELS = {
+  error: 0,
+  warn: 1,
+  info: 2,
+  debug: 3,
+};
 
-// Also Log to Debug Console
-class DebugConsoleLogTransport extends winston.Transport {
-  log(info, callback) {
-    setImmediate(() => this.emit("logged", info))
+// Get log level from localStorage or default to 'info'
+const getLogLevel = () => {
+  const stored = localStorage.getItem("LOG_LEVEL") || "info";
+  return LOG_LEVELS[stored] !== undefined ? stored : "info";
+};
 
-    const { timestamp, level, message } = info
-    console.log(`${message}`)
+class BrowserLogger {
+  constructor() {
+    this.level = getLogLevel();
+  }
 
-    callback() // Must call this when done
+  setLevel(level) {
+    if (LOG_LEVELS[level] !== undefined) {
+      this.level = level;
+      localStorage.setItem("LOG_LEVEL", level);
+    }
+  }
+
+  shouldLog(level) {
+    return LOG_LEVELS[level] <= LOG_LEVELS[this.level];
+  }
+
+  formatMessage(level, message) {
+    const timestamp = new Date().toISOString();
+    return `[${timestamp}] ${level.toUpperCase()}: ${message}`;
+  }
+
+  error(message, ...args) {
+    if (this.shouldLog("error")) {
+      console.error(this.formatMessage("error", message), ...args);
+    }
+  }
+
+  warn(message, ...args) {
+    if (this.shouldLog("warn")) {
+      console.warn(this.formatMessage("warn", message), ...args);
+    }
+  }
+
+  info(message, ...args) {
+    if (this.shouldLog("info")) {
+      console.info(this.formatMessage("info", message), ...args);
+    }
+  }
+
+  debug(message, ...args) {
+    if (this.shouldLog("debug")) {
+      console.log(this.formatMessage("debug", message), ...args);
+    }
   }
 }
 
-const { combine, timestamp, printf } = winston.format
-
-// Set default log level or use environment variable
-const logLevel = process.env.LOG_LEVEL || "info"
-
-// Define log format
-const logFormat = printf((info) => {
-  return `[${info.timestamp}] ${info.level}: ${info.message}`
-})
-
-// Define file transport with size-based rotation
-const fileTransport = new winston.transports.File({
-  filename: path.join("logs", "server.log"),
-  maxsize: 1 * 1024 * 1024, // 1MB
-  maxFiles: 1, // Keep only the current log file
-  tailable: true, // Keep the file descriptor open
-  level: logLevel,
-  format: combine(timestamp({ format: "YYYY-MM-DD HH:mm:ss" }), logFormat),
-})
-
-// Define console transport
-const consoleTransport = new winston.transports.Console({
-  level: logLevel,
-  stderrLevels: [], // Only use stdout
-  format: combine(timestamp({ format: "YYYY-MM-DD HH:mm:ss" }), logFormat),
-})
-
-// Create logger instance
-const logger = winston.createLogger({
-  level: logLevel,
-  transports: [
-    fileTransport,
-    new DebugConsoleLogTransport(),
-    consoleTransport, // Optional: include console transport if you want logs in console
-  ],
-})
-
-// Export logger
-module.exports = { logger }
+// Create and export logger instance
+export const logger = new BrowserLogger();

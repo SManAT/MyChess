@@ -8,36 +8,40 @@ import axios from "axios";
 window.$ = $;
 window.axios = axios;
 
-// axios define Server URL
-axios.defaults.baseURL = import.meta.env.VITE_SERVER_URL;
-
 $(function () {
+  // axios define Server URL
+  axios.defaults.baseURL =
+    "http://" +
+    import.meta.env.VITE_SERVER_URL +
+    ":" +
+    import.meta.env.VITE_SERVER_PORT;
+
   $("#username").trigger("focus");
 
   $("#login_form").on("submit", async function (e) {
     e.preventDefault();
 
     const formData = new FormData(e.target);
-    const loginData = {
+    let loginData = {
       username: formData.get("username"),
       password: formData.get("password"),
     };
 
     //Debug
-    window.location.href = "/chess.html";
-    console.log("JWT noch offen!!");
+    loginData.username = "Hans";
+    loginData.password = "Moser";
 
     // Store data that persists even after browser restart
     localStorage.setItem("username", loginData.username);
 
     // JWT to Server
-
-    let data = JSON.stringify(loginData);
-    await axios.post("/login", data).then((response) => {
+    await axios.post("/login", loginData).then((response) => {
       if (response.data?.authenticated) {
+        console.log(response.data);
+        console.log(response.data.token);
         // Success
-        //localStorage.setItem("authToken", result.token);
-        window.location.href = "/dashboard";
+        localStorage.setItem("authToken", response.data.token);
+        window.location.href = "/chess.html";
         return;
       }
     });

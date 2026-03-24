@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
 
-const logger = require("./logger").logger;
+import { logger } from "./logger.js";
 
 class SocketManager {
   constructor() {
@@ -14,7 +14,6 @@ class SocketManager {
     this.socket = io(`http://${server}:${port}`, {
       auth: {
         username: sessionStorage.getItem("username"),
-        userId: sessionStorage.getItem("userId"),
         token: sessionStorage.getItem("authToken"),
         timestamp: Date.now(),
       },

@@ -6,7 +6,6 @@ const players = new Map()
 const logger = require("../logger").logger
 
 function gameHandler(io) {
-  
   //Client connects
   io.on("connection", async (socket) => {
     logger.info("Player connected:", socket.id)
