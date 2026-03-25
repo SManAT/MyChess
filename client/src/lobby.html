@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyChess</title>
+  <link rel="icon" href="/src/public/favicon.png">
+</head>
+
+<body>
+  <nav class="navbar" style="background-color: #e3f2fd;" data-bs-theme="light">
+    <div class="container-fluid">
+      <!-- Logo on the left -->
+      <a class="navbar-brand" href="#">
+        <img src="/src/public/lobby.png" alt="Logo">
+        Game Lobby
+      </a>
+
+
+      <!-- User dropdown on the right -->
+      <div class="dropdown">
+        <a class="user-dropdown" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-person-circle user-icon"></i>
+          <span>Username</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+          <li><a class="dropdown-item" href="#">Profile</a></li>
+          <li>
+            <hr class="dropdown-divider">
+          </li>
+          <li><a class="dropdown-item" href="#">Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-4">
+    <div class="row">
+      <div class="col-5 offset-1">
+        <h2>Players</h2>
+        <div class="player-list">
+          <ul class="list-unstyled">
+            <li class="player-item">
+              <span>Player 1</span>
+              <div class="action-icons">
+                <i class="bi bi-chat" title="Chat"></i>
+              </div>
+            </li>
+            <li class="player-item">
+              <span>Player 2</span>
+              <div class="action-icons">
+                <i class="bi bi-chat" title="Chat"></i>
+              </div>
+            </li>
+            <li class="player-item">
+              <span>Player 3</span>
+              <div class="action-icons">
+                <i class="bi bi-chat" title="Chat"></i>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-5">
+        <h2>Games</h2>
+        <div class="game-list">
+          <button id="game-add" type="button" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i>
+            Create Game
+          </button>
+
+        </div>
+        <div class="game-list">
+          <ul class="list-unstyled">
+            <li class="game-item">
+              <span>Game 1</span>
+              <div class="action-icons">
+                <i class="bi bi-play-circle" title="Join"></i>
+                <i class="bi bi-chat" title="Chat"></i>
+              </div>
+            </li>
+            <li class="game-item">
+              <span>Game 2</span>
+              <div class="action-icons">
+                <i class="bi bi-play-circle" title="Join"></i>
+                <i class="bi bi-chat" title="Chat"></i>
+              </div>
+            </li>
+            <li class="game-item">
+              <span>Game 3</span>
+              <div class="action-icons">
+                <i class="bi bi-play-circle" title="Join"></i>
+                <i class="bi bi-chat" title="Chat"></i>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script type="module" src="/src/entries/lobby.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,45 @@
+a {
+  text-decoration: none !important;
+}
+
+.player-list,
+.game-list {
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.player-item,
+.game-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  margin-bottom: 5px;
+  background-color: #e9ecef;
+  border-radius: 3px;
+}
+
+.action-icons {
+  display: flex;
+  gap: 10px;
+}
+
+.navbar {
+  padding: 0.5rem 1rem;
+}
+
+.navbar-brand img {
+  height: 30px;
+}
+
+.user-dropdown {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+
+  .user-icon {
+    font-size: 1.5rem;
+    margin-right: 0.5rem;
+  }
+}

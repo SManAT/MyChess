@@ -49,7 +49,7 @@ export default defineConfig({
           const rewrites = {
             "/": "/src/index.html",
             "/index.html": "/src/index.html",
-            "/chess.html": "/src/chess.html",
+            "/lobby.html": "/src/lobby.html",
           };
 
           const url = req.url?.split("?")[0];

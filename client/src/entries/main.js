@@ -34,14 +34,11 @@ $(function () {
     // Store data that persists even after browser restart
     localStorage.setItem("username", loginData.username);
 
-    // JWT to Server
+    // JWT from Server
     await axios.post("/login", loginData).then((response) => {
       if (response.data?.authenticated) {
-        console.log(response.data);
-        console.log(response.data.token);
-        // Success
         localStorage.setItem("authToken", response.data.token);
-        window.location.href = "/chess.html";
+        window.location.href = "/lobby.html";
         return;
       }
     });

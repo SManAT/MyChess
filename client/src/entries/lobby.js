@@ -1,18 +1,15 @@
-export class GameLobby {
+import "@scss/lobby.scss";
+
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+
+import $ from "jquery";
+window.$ = $;
+
+class Lobby {
   constructor(onJoinGame) {
     this.onJoinGame = onJoinGame;
-  }
-
-  render() {
-    return `
-      <div class="lobby">
-        <h1>♔ Chess Game ♛</h1>
-        <p>Enter your name to start playing</p>
-        <input type="text" id="playerName" placeholder="Your name" maxlength="20">
-        <input type="text" id="gameId" placeholder="Game ID (optional)">
-        <button id="joinGame">Join Game</button>
-      </div>
-    `;
   }
 
   attachEventListeners() {
@@ -50,3 +47,12 @@ export class GameLobby {
     setTimeout(() => playerNameInput.focus(), 100);
   }
 }
+
+$(function () {
+  // Start the lobby
+  new Lobby();
+
+  $("#game-add").on("click", function () {
+    console.log("NEW GAME");
+  });
+});
