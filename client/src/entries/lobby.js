@@ -72,7 +72,16 @@ $(function () {
   const lobby = new Lobby();
 
   $("#game-add").on("click", function () {
-    console.log("NEW GAME");
     lobby.createGame();
+    $("#newgameModal").modal("show");
+  });
+
+  $("#newgameModal").on("shown.bs.modal", function (event) {
+    $("#group-name").trigger("focus");
+  });
+
+  // After modal is fully hidden
+  $("#newgameModal").on("hidden.bs.modal", function (event) {
+    // Cleanup code here
   });
 });

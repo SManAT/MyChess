@@ -1,8 +1,8 @@
-const CRUDDatabase = require("./database")
+const SQLiteDatabase = require("./database")
 
 function DBInit() {
   // Initialize database
-  const db = new CRUDDatabase("./DB/chessapp.db", { verbose: false })
+  const db = new SQLiteDatabase("./DB/chessapp.db", { verbose: false })
 
   // Create a users table
   const userSchema = {

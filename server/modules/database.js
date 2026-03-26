@@ -1,6 +1,6 @@
 const Database = require("better-sqlite3")
 
-class CRUDDatabase {
+class SQLiteDatabase {
   constructor(dbPath = "./database.db", options = {}) {
     // Ensure directory exists
     const path = require("path")
@@ -19,13 +19,19 @@ class CRUDDatabase {
       delete dbOptions.verbose // Remove verbose if false/undefined
     }
 
-      this.db = new Database(dbPath, dbOptions)
+    this.db = new Database(dbPath, dbOptions)
 
-      // Enable foreign keys and WAL mode for better performance
-      this.db.pragma("foreign_keys = ON")
-      this.db.pragma("journal_mode = WAL")
+    // Enable foreign keys and WAL mode for better performance
+    this.db.pragma("foreign_keys = ON")
+    this.db.pragma("journal_mode = WAL")
 
     this.preparedStatements = new Map()
+  }
+
+  getUserId(username) {
+    const stmt = this.db.prepare("SELECT id FROM users WHERE username = ?")
+    const user = stmt.get(username)
+    return user ? user.id : null
   }
 
   createNewGame() {
@@ -496,7 +502,7 @@ class CRUDDatabase {
   }
 }
 
-module.exports = CRUDDatabase
+module.exports = SQLiteDatabase
 
 /*
 const CRUDDatabase = require('./database');

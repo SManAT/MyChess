@@ -39,8 +39,8 @@ $(function () {
     };
 
     //Debug
-    loginData.username = "Hans";
-    loginData.password = "Moser";
+    loginData.username = "hans.moser";
+    loginData.password = "324234234";
 
     // Store data that persists even after browser restart
     localStorage.setItem("username", loginData.username);
@@ -50,6 +50,7 @@ $(function () {
       const response = await axios.post("/login", loginData);
       if (response.data?.authenticated) {
         localStorage.setItem("authToken", response.data.token);
+        localStorage.setItem("userId", response.data.userid);
         window.location.href = "/lobby.html";
         return;
       }

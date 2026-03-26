@@ -1,7 +1,6 @@
 var express = require("express")
 var router = express.Router()
-const jwt = require("jsonwebtoken")
-const logger = require("./logger").logger
+
 const client = require("./clientTalk")
 
 const { authenticateToken } = require("../middleware/JWT.js")
