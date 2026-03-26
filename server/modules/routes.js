@@ -2,33 +2,16 @@ var express = require("express")
 var router = express.Router()
 const jwt = require("jsonwebtoken")
 const logger = require("./logger").logger
+const client = require("./clientTalk")
 
-//const { clientLogin, authenticateToken } = require("../middleware/JWT.js")
+const { authenticateToken } = require("../middleware/JWT.js")
 
-router.post("/login", async (req, res) => {
-  const { username, password } = req.body
+router.post("/login", client.login)
 
-  const payload = {
-    username: username,
-    password: password,
-  }
-  // The Important Part to auth
-  const token = jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: "8h",
-  })
-  // send cookie to client
-  logger.info("Authenticated, token sent to " + username + " ...")
-
-  return res.status(200).json({
-    authenticated: true,
-    message: "Login successful 😊👌",
-    token,
-  })
-})
+router.post("/creategame", authenticateToken, client.creategame)
 
 // middleware routes
 /*
-router.post("/register", checkMySQLDataReady, authenticateToken, clientService.registerClient)
 router.post("/getinfos", checkMySQLDataReady, authenticateToken, clientService.getInfos)
 router.post("/ping", checkMySQLDataReady, authenticateToken, clientService.Ping)
 

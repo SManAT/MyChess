@@ -19,13 +19,41 @@ class CRUDDatabase {
       delete dbOptions.verbose // Remove verbose if false/undefined
     }
 
-    this.db = new Database(dbPath, dbOptions)
+      this.db = new Database(dbPath, dbOptions)
 
-    // Enable foreign keys and WAL mode for better performance
-    this.db.pragma("foreign_keys = ON")
-    this.db.pragma("journal_mode = WAL")
+      // Enable foreign keys and WAL mode for better performance
+      this.db.pragma("foreign_keys = ON")
+      this.db.pragma("journal_mode = WAL")
 
     this.preparedStatements = new Map()
+  }
+
+  createNewGame() {
+    // Create a new game
+    const newGame = {
+      name: "Chess Match #1",
+      number_of_players: 2,
+      user_id: 1,
+      closed: false,
+    }
+    const gameId = db.insert("games", newGame)
+
+    // Find open games
+    const openGames = db.select("games", { closed: false })
+
+    // Find games by user
+    const userGames = db.select("games", { user_id: 1 })
+
+    // Close a game
+    db.update("games", { id: gameId }, { closed: true })
+
+    // Get game with user info (if your CRUD library supports joins)
+    const gamesWithUsers = db.query(`
+  SELECT g.*, u.name as creator_name 
+  FROM games g 
+  JOIN users u ON g.user_id = u.id 
+  WHERE g.closed = 0
+`)
   }
 
   /**

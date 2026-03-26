@@ -18,6 +18,17 @@ $(function () {
 
   $("#username").trigger("focus");
 
+  // Get all query parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const error = urlParams.get("error");
+  // Check if parameter exists
+  if (error === "1") {
+    $(".alert-danger").removeClass("hidden");
+    $(".alert-danger").html(
+      `Server <i>${axios.defaults.baseURL}</i> is not reachable at the moment!`,
+    );
+  }
+
   $("#login_form").on("submit", async function (e) {
     e.preventDefault();
 
@@ -35,12 +46,22 @@ $(function () {
     localStorage.setItem("username", loginData.username);
 
     // JWT from Server
-    await axios.post("/login", loginData).then((response) => {
+    try {
+      const response = await axios.post("/login", loginData);
       if (response.data?.authenticated) {
         localStorage.setItem("authToken", response.data.token);
         window.location.href = "/lobby.html";
         return;
       }
-    });
+    } catch (error) {
+      if (
+        error.code === "ENOTFOUND" ||
+        error.code === "ECONNREFUSED" ||
+        !error.response
+      ) {
+        console.error("Server is unreachable");
+        window.location.href = "/index.html?error=1";
+      }
+    }
   });
 });

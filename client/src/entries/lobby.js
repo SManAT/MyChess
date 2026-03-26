@@ -5,7 +5,10 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 import $ from "jquery";
+import axios from "axios";
+
 window.$ = $;
+window.axios = axios;
 
 class Lobby {
   constructor(onJoinGame) {
@@ -46,13 +49,30 @@ class Lobby {
     // Focus on name input
     setTimeout(() => playerNameInput.focus(), 100);
   }
+
+  /**
+   * creates a new Chess Game on Server
+   */
+  async createGame() {
+    let data = {
+      username: localStorage.getItem("username"),
+      token: localStorage.getItem("authToken"),
+    };
+    const response = await axios.post("/creategame", data);
+    if (response.data?.authenticated) {
+      localStorage.setItem("authToken", response.data.token);
+      window.location.href = "/lobby.html";
+      return;
+    }
+  }
 }
 
 $(function () {
   // Start the lobby
-  new Lobby();
+  const lobby = new Lobby();
 
   $("#game-add").on("click", function () {
     console.log("NEW GAME");
+    lobby.createGame();
   });
 });
