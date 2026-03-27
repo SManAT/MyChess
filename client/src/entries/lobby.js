@@ -72,8 +72,8 @@ $(function () {
   const lobby = new Lobby();
 
   $("#game-add").on("click", function () {
-    lobby.createGame();
     $("#newgameModal").modal("show");
+    //lobby.createGame();
   });
 
   $("#newgameModal").on("shown.bs.modal", function (event) {
