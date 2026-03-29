@@ -1,9 +1,23 @@
-const SQLiteDatabase = require("./database")
+const Database = require("better-sqlite3")
 
-function DBInit() {
-  // Initialize database
-  const db = new SQLiteDatabase("./DB/chessapp.db", { verbose: false })
+const fs = require("fs")
+const path = require("path")
 
+function initializeDatabase(db) {
+  // Check if database is empty/new by looking for tables
+  const tables = db
+    .prepare(
+      `SELECT name FROM sqlite_master 
+        WHERE type='table' AND name NOT LIKE 'sqlite_%'`,
+    )
+    .all()
+
+  if (tables.length === 0) {
+    createTables()
+  }
+}
+
+function createTables() {
   // Create a users table
   const userSchema = {
     id: "INTEGER",
@@ -38,5 +52,18 @@ function DBInit() {
       },
     },
   })
+}
+
+function DBInit() {
+  // Ensure the DB directory exists
+  const dbDir = path.dirname("./DB/chessapp.db")
+  if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true })
+  }
+
+  // Create database connection (will create file if it doesn't exist)
+  const db = new Database("./DB/chessapp.db")
+
+  initializeDatabase(db)
 }
 module.exports = DBInit

@@ -10,22 +10,62 @@
 
 <body>
   <!-- Modal -->
-  <div class="modal fade" id="newgameModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+  <div class="modal fade" id="newgameModal" tabindex="-1" aria-labelledby="newgameModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
+          <h5 class="modal-title" id="newgameModalLabel">Create New Game</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">
-          ...
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
-        </div>
+        <form id="newGameForm">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="group-name" class="form-label">
+                Name der Partie
+              </label>
+              <input type="text" class="form-control" id="group-name" name="gameName" required placeholder="Spiel ...">
+            </div>
+
+            <!-- Player Selection with Search -->
+            <div class="mb-3">
+              <label for="player-select" class="form-label">
+                <i class="bi bi-people me-2"></i>Spieler einladen
+              </label>
+              <div class="dropdown">
+                <input type="text" class="form-control dropdown-toggle" id="player-search" data-bs-toggle="dropdown" placeholder="Suche Spieler ..." autocomplete="off">
+                <ul class="dropdown-menu w-100" id="player-dropdown">
+                  <!-- Players will be populated here -->
+                </ul>
+              </div>
+
+              <!-- Selected Players Display -->
+              <div id="selected-players" class="mt-2">
+                <!-- Selected player badges will appear here -->
+              </div>
+            </div>
+
+            <!-- Game Type (Optional) -->
+            <div class="mb-3">
+              <label for="game-type" class="form-label">
+                <i class="bi bi-gear me-2"></i>Game Type
+              </label>
+              <select class="form-select" id="game-type" name="gameType">
+                <option value="standard">Standard</option>
+                <option value="blitz">Blitz</option>
+                <option value="bullet">Bullet</option>
+                <option value="rapid">Rapid</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              <i class="bi bi-x-circle me-2"></i>Cancel
+            </button>
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-plus-circle me-2"></i>Create Game
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
