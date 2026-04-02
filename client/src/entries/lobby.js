@@ -77,30 +77,17 @@ $(function () {
   const mm = document.getElementById("newgameModal");
   if (mm) {
     const modal = new Modal(mm);
+    loadPlayers();
     modal.show();
   }
   //Debug
-
-  // Sample players data - replace with actual API call
-  const samplePlayers = [
-    { id: 1, username: "player1", email: "player1@example.com", online: true },
-    { id: 2, username: "player2", email: "player2@example.com", online: false },
-    {
-      id: 3,
-      username: "chessmaster",
-      email: "chess@example.com",
-      online: true,
-    },
-    { id: 4, username: "rookie", email: "rookie@example.com", online: true },
-  ];
 
   // Load players from API
   async function loadPlayers() {
     try {
       // Replace with actual API call
-      // const response = await axios.get('/api/players');
-      // allPlayers = response.data;
-      allPlayers = samplePlayers; // Using sample data
+      const response = await axios.post("/api/getplayers");
+      allPlayers = response.data;
       updatePlayerDropdown(allPlayers);
     } catch (error) {
       console.error("Error loading players:", error);
@@ -122,7 +109,7 @@ $(function () {
   function updatePlayerDropdown(players) {
     const dropdown = $("#player-dropdown");
     dropdown.empty();
-
+    console.log(players.length);
     if (players.length === 0) {
       dropdown.append(
         '<li><span class="dropdown-item-text text-muted">No players found</span></li>',

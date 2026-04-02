@@ -28,6 +28,10 @@ class SQLiteDatabase {
     this.preparedStatements = new Map()
   }
 
+  getDBHandler() {
+    return this.db
+  }
+
   getUserId(username) {
     const stmt = this.db.prepare("SELECT id FROM users WHERE username = ?")
     const user = stmt.get(username)

@@ -5,6 +5,7 @@ const cors = require("cors")
 const gameHandler = require("./modules/socket/gameHandler")
 const DBINit = require("./modules/dbInit")
 const path = require("path")
+const listEndpoints = require("express-list-endpoints")
 
 const router = require("./modules/routes.js")
 
@@ -26,10 +27,16 @@ app.use(cors())
 app.use(express.json())
 
 //routes, mount as app middleware
-app.use("/", router)
+app.use("/api", router)
+
+if (process.env.DEBUG) {
+  // After setting up all routes
+  console.log("All registered endpoints:")
+  console.table(listEndpoints(app))
+}
 
 //Database init
-DBINit()
+DBINit(true)
 
 // Socket handling
 gameHandler(io)

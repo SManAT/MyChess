@@ -47,7 +47,7 @@ $(function () {
 
     // JWT from Server
     try {
-      const response = await axios.post("/login", loginData);
+      const response = await axios.post("/api/login", loginData);
       if (response.data?.authenticated) {
         localStorage.setItem("authToken", response.data.token);
         localStorage.setItem("userId", response.data.userid);

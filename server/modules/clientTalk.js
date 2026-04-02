@@ -28,9 +28,14 @@ async function login(req, res) {
   })
 }
 
+async function getplayers(req, res) {
+  console.log("XXXXXXXXXXXX")
+}
+
 async function creategame(req, res) {}
 
 module.exports = {
   login,
   creategame,
+  getplayers,
 }

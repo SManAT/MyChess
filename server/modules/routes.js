@@ -8,6 +8,7 @@ const { authenticateToken } = require("../middleware/JWT.js")
 router.post("/login", client.login)
 
 router.post("/creategame", authenticateToken, client.creategame)
+router.post("/getplayers", authenticateToken, client.getplayers)
 
 // middleware routes
 /*
