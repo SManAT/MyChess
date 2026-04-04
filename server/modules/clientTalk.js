@@ -29,7 +29,13 @@ async function login(req, res) {
 }
 
 async function getplayers(req, res) {
-  console.log("XXXXXXXXXXXX")
+  const db = new SQLiteDatabase("./DB/chessapp.db", { verbose: false })
+
+  let allplayers = db.getPlayers(req.userid)
+
+  return res.status(200).json({
+    players: allplayers,
+  })
 }
 
 async function creategame(req, res) {}

@@ -1,14 +1,13 @@
 import "@scss/lobby.scss";
 
 import $ from "jquery";
-import axios from "axios";
+import api from "../utils/axiosApi.js";
 
 import { Modal } from "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 window.$ = window.jQuery = $;
-window.axios = axios;
 
 class Lobby {
   constructor(onJoinGame) {
@@ -56,9 +55,8 @@ class Lobby {
   async createGame() {
     let data = {
       username: localStorage.getItem("username"),
-      token: localStorage.getItem("authToken"),
     };
-    const response = await axios.post("/creategame", data);
+    const response = await api.post("/creategame", data);
     if (response.data?.authenticated) {
       localStorage.setItem("authToken", response.data.token);
       window.location.href = "/lobby.html";
@@ -72,6 +70,7 @@ $(function () {
   const lobby = new Lobby();
   let selectedPlayers = [];
   let allPlayers = [];
+  let stackAllPlayers = [];
 
   //Debug
   const mm = document.getElementById("newgameModal");
@@ -79,16 +78,20 @@ $(function () {
     const modal = new Modal(mm);
     loadPlayers();
     modal.show();
+
+    $("#game-name").val("TESTGame");
   }
   //Debug
 
   // Load players from API
   async function loadPlayers() {
     try {
-      // Replace with actual API call
-      const response = await axios.post("/api/getplayers");
+      localStorage.getItem("authToken");
+      const response = await api.post("api/getplayers");
       allPlayers = response.data;
-      updatePlayerDropdown(allPlayers);
+      const playersArray = Object.values(allPlayers.players);
+      updatePlayerDropdown(playersArray);
+      stackAllPlayers = playersArray;
     } catch (error) {
       console.error("Error loading players:", error);
     }
@@ -97,87 +100,94 @@ $(function () {
   // Player search functionality
   $("#player-search").on("input", function () {
     const searchTerm = $(this).val().toLowerCase();
-    const filteredPlayers = allPlayers.filter(
-      (player) =>
-        player.username.toLowerCase().includes(searchTerm) ||
-        player.email.toLowerCase().includes(searchTerm),
-    );
-    updatePlayerDropdown(filteredPlayers);
+    if (searchTerm != "") {
+      // Convert object values to array
+      const playersArray = Object.values(allPlayers.players);
+      const filteredPlayers = playersArray.filter((player) => {
+        if (!player) return false;
+        if (!player.username || typeof player.username !== "string")
+          return false;
+        if (!searchTerm || typeof searchTerm !== "string") return false;
+        return player.username.toLowerCase().includes(searchTerm.toLowerCase());
+      });
+      updatePlayerDropdown(filteredPlayers);
+    } else {
+      //bei leer wieder befüllen
+      updatePlayerDropdown(stackAllPlayers);
+    }
   });
 
   // Update dropdown with filtered players
-  function updatePlayerDropdown(players) {
+  function updatePlayerDropdown(data) {
     const dropdown = $("#player-dropdown");
     dropdown.empty();
-    console.log(players.length);
-    if (players.length === 0) {
+
+    if (data.length === 0) {
       dropdown.append(
         '<li><span class="dropdown-item-text text-muted">No players found</span></li>',
       );
       return;
     }
 
-    players.forEach((player) => {
+    data.forEach((player) => {
       // Skip already selected players
       if (selectedPlayers.find((p) => p.id === player.id)) return;
 
       const onlineIndicator = player.online
-        ? '<i class="bi bi-circle-fill text-success me-2" style="font-size: 0.5rem;"></i>'
-        : '<i class="bi bi-circle text-secondary me-2" style="font-size: 0.5rem;"></i>';
+        ? '<i class="bi bi-circle-fill text-success me-2 dropdown-icon green"></i>'
+        : '<i class="bi bi-circle text-secondary me-2 dropdown-icon red"></i>';
 
       dropdown.append(`
         <li>
           <a class="dropdown-item player-item" href="#" data-player-id="${player.id}">
             ${onlineIndicator}
             <strong>${player.username}</strong>
-            <small class="text-muted d-block">${player.email}</small>
           </a>
         </li>
       `);
     });
   }
 
-  // Handle player selection
+  // Handle player selection -----------------------------
   $(document).on("click", ".player-item", function (e) {
     e.preventDefault();
     const playerId = parseInt($(this).data("player-id"));
-    const player = allPlayers.find((p) => p.id === playerId);
+    const player = allPlayers.players.find((p) => p.id === playerId);
 
     if (player && !selectedPlayers.find((p) => p.id === playerId)) {
       selectedPlayers.push(player);
       updateSelectedPlayers();
-      $("#player-search").val("").trigger("input"); // Clear search and refresh dropdown
     }
   });
 
-  // Update selected players display
+  // Update selected players display ------------
   function updateSelectedPlayers() {
     const container = $("#selected-players");
-    container.empty();
-
-    if (selectedPlayers.length === 0) {
-      container.append('<small class="text-muted">No players selected</small>');
-      return;
-    }
+    container.html("");
 
     selectedPlayers.forEach((player) => {
-      const onlineClass = player.online ? "success" : "secondary";
       container.append(`
-        <span class="badge bg-${onlineClass} me-2 mb-2">
-          ${player.username}
+        <span class="badge bg-success me-2 mb-2 thebadge">
+          <span class="txt">
+            ${player.username}
+          </span>
           <button type="button" class="btn-close btn-close-white ms-2 remove-player" 
-                  data-player-id="${player.id}" style="font-size: 0.7rem;"></button>
+                  data-player-id="${player.id}"></button>
         </span>
       `);
     });
+    selectedPlayers = [];
   }
 
   // Remove selected player
   $(document).on("click", ".remove-player", function () {
     const playerId = parseInt($(this).data("player-id"));
-    selectedPlayers = selectedPlayers.filter((p) => p.id !== playerId);
-    updateSelectedPlayers();
-    $("#player-search").trigger("input"); // Refresh dropdown
+    //selectedPlayers = selectedPlayers.filter((p) => p.id !== playerId);
+    selectedPlayers = [];
+    $("#selected-players").html("");
+
+    //updateSelectedPlayers();
+    //$("#player-search").trigger("input"); // Refresh dropdown
   });
 
   $("#game-add").on("click", function () {

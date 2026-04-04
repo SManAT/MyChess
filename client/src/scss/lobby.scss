@@ -43,3 +43,27 @@ a {
     margin-right: 0.5rem;
   }
 }
+
+.dropdown-icon {
+  font-size: 1rem;
+
+  .red {
+    color: #f00;
+  }
+
+  .green {
+    color: #26ea67;
+  }
+}
+
+#selected-players {
+  text-align: center;
+
+  .thebadge {
+    font-size: 1rem;
+
+    button {
+      font-size: 0.8rem;
+    }
+  }
+}

@@ -38,6 +38,22 @@ class SQLiteDatabase {
     return user ? user.id : null
   }
 
+  /**
+   *
+   * @returns Get all Users
+   */
+  getPlayers(userid) {
+    const ID = Number(userid)
+    const query = this.db.prepare("SELECT id, username,online FROM users WHERE id<>?")
+    const result = query.all(ID)
+    // Convert to boolean in JavaScript
+    const users = result.map((user) => ({
+      ...user,
+      online: Boolean(user.online),
+    }))
+    return users
+  }
+
   createNewGame() {
     // Create a new game
     const newGame = {

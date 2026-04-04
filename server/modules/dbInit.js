@@ -75,13 +75,13 @@ function dropExistingTables(db) {
 function restoreUsers(db, users) {
   if (users.length > 0) {
     const insertUser = db.getDBHandler().prepare(`
-      INSERT INTO users (id, username, password, created_at) 
-      VALUES (?, ?, ?, ?)
+      INSERT INTO users (id, username, password, online, created_at) 
+      VALUES (?, ?, ?, ?, ?)
     `)
 
     const insertManyUsers = db.getDBHandler().transaction((users) => {
       for (const user of users) {
-        insertUser.run(user.id, user.username, user.password, user.created_at)
+        insertUser.run(user.id, user.username, user.password, user.online, user.created_at)
       }
     })
 
@@ -101,6 +101,7 @@ function createTables(db) {
     id: "INTEGER PRIMARY KEY AUTOINCREMENT",
     username: "TEXT NOT NULL",
     password: "TEXT NOT NULL",
+    online: "INTEGER NOT NULL DEFAULT 0 CHECK (online IN (0, 1))",
     created_at: "DATETIME DEFAULT CURRENT_TIMESTAMP",
   }
 

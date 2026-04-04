@@ -10,6 +10,16 @@ export default defineConfig({
   root: "./",
   publicDir: resolve(__dirname, "public"),
 
+  server: {
+    proxy: {
+      "/api": {
+        target: "http://localhost:5000", // Replace with your backend server URL
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
+
   build: {
     outDir: path.resolve(__dirname, "dist"),
     emptyOutDir: true,

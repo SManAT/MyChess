@@ -2,20 +2,12 @@ import "@scss/login.scss";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import api from "../utils/axiosApi.js";
 
 import $ from "jquery";
-import axios from "axios";
 window.$ = $;
-window.axios = axios;
 
 $(function () {
-  // axios define Server URL
-  axios.defaults.baseURL =
-    "http://" +
-    import.meta.env.VITE_SERVER_URL +
-    ":" +
-    import.meta.env.VITE_SERVER_PORT;
-
   $("#username").trigger("focus");
 
   // Get all query parameters
@@ -25,7 +17,7 @@ $(function () {
   if (error === "1") {
     $(".alert-danger").removeClass("hidden");
     $(".alert-danger").html(
-      `Server <i>${axios.defaults.baseURL}</i> is not reachable at the moment!`,
+      `Server <i>${api.defaults.baseURL}</i> is not reachable at the moment!`,
     );
   }
 
@@ -47,7 +39,7 @@ $(function () {
 
     // JWT from Server
     try {
-      const response = await axios.post("/api/login", loginData);
+      const response = await api.post("/api/login", loginData);
       if (response.data?.authenticated) {
         localStorage.setItem("authToken", response.data.token);
         localStorage.setItem("userId", response.data.userid);
