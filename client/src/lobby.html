@@ -14,7 +14,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="newgameModalLabel">Create New Game</h5>
+          <h5 class="modal-title" id="newgameModalLabel">Neue Partie erstellen</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <form id="newGameForm">
@@ -51,9 +51,6 @@
               </label>
               <select class="form-select" id="game-type" name="gameType">
                 <option value="standard">Standard</option>
-                <option value="blitz">Blitz</option>
-                <option value="bullet">Bullet</option>
-                <option value="rapid">Rapid</option>
               </select>
             </div>
           </div>
@@ -98,40 +95,17 @@
 
   <div class="container mt-4">
     <div class="row">
-      <div class="col-5 offset-1">
-        <h2>Players</h2>
-        <div class="player-list">
-          <ul class="list-unstyled">
-            <li class="player-item">
-              <span>Player 1</span>
-              <div class="action-icons">
-                <i class="bi bi-chat" title="Chat"></i>
-              </div>
-            </li>
-            <li class="player-item">
-              <span>Player 2</span>
-              <div class="action-icons">
-                <i class="bi bi-chat" title="Chat"></i>
-              </div>
-            </li>
-            <li class="player-item">
-              <span>Player 3</span>
-              <div class="action-icons">
-                <i class="bi bi-chat" title="Chat"></i>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
       <div class="col-5">
-        <h2>Games</h2>
-        <div class="game-list">
+        <div class="d-flex justify-content-between">
+
+          <span class="myh2">Meine Partien</span>
           <button id="game-add" type="button" class="btn btn-success">
             <i class="bi bi-plus-circle"></i>
-            Create Game
+            Neue Partie
           </button>
-
         </div>
+
+
         <div class="game-list">
           <ul class="list-unstyled">
             <li class="game-item">
@@ -155,6 +129,13 @@
                 <i class="bi bi-chat" title="Chat"></i>
               </div>
             </li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-5 offset-1">
+        <h2>Spieler Online</h2>
+        <div class="player-list">
+          <ul class="list-unstyled">
           </ul>
         </div>
       </div>

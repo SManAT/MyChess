@@ -1,4 +1,5 @@
 const SQLiteDatabase = require("./database")
+const Database = require("better-sqlite3")
 
 const fs = require("fs")
 const path = require("path")
@@ -19,33 +20,6 @@ function initializeDatabase(db) {
 
   if (tables.length === 0) {
     createTables(db)
-  } else {
-    // Database exists, backup users and recreate with new schema
-    backupUsersAndRecreateDatabase(db)
-  }
-}
-
-function backupUsersAndRecreateDatabase(db) {
-  // Backup existing users data
-  const existingUsers = backupUsers(db)
-
-  // Drop existing tables
-  dropExistingTables(db)
-
-  // Create new tables with updated schema
-  createTables(db)
-
-  // Restore users data
-  restoreUsers(db, existingUsers)
-}
-
-function backupUsers(db) {
-  try {
-    const stmt = db.getDBHandler().prepare("SELECT * FROM users")
-    return stmt.all()
-  } catch (error) {
-    console.log("Users table does not exist or error reading:", error.message)
-    return []
   }
 }
 
@@ -72,29 +46,6 @@ function dropExistingTables(db) {
   }
 }
 
-function restoreUsers(db, users) {
-  if (users.length > 0) {
-    const insertUser = db.getDBHandler().prepare(`
-      INSERT INTO users (id, username, password, online, created_at) 
-      VALUES (?, ?, ?, ?, ?)
-    `)
-
-    const insertManyUsers = db.getDBHandler().transaction((users) => {
-      for (const user of users) {
-        insertUser.run(user.id, user.username, user.password, user.online, user.created_at)
-      }
-    })
-
-    try {
-      insertManyUsers(users)
-    } catch (error) {
-      console.error("Error restoring users:", error.message)
-    }
-  } else {
-    console.log("No users to restore.")
-  }
-}
-
 function createTables(db) {
   // Create users table first (no dependencies)
   const userSchema = {
@@ -115,7 +66,8 @@ function createTables(db) {
     name: "TEXT NOT NULL",
     number_of_players: "INTEGER NOT NULL",
     user_id: "INTEGER NOT NULL",
-    closed: "BOOLEAN DEFAULT FALSE",
+    opponent: "INTEGER NOT NULL",
+    closed: "INTEGER NOT NULL DEFAULT 0 CHECK (closed IN (0, 1))",
     created_at: "DATETIME DEFAULT CURRENT_TIMESTAMP",
   }
 
@@ -126,7 +78,8 @@ function createTables(db) {
       name TEXT NOT NULL,
       number_of_players INTEGER NOT NULL,
       user_id INTEGER NOT NULL,
-      closed BOOLEAN DEFAULT FALSE,
+      opponent INTEGER NOT NULL,
+      closed INTEGER NOT NULL DEFAULT 0 CHECK (closed IN (0, 1)),
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     )
@@ -139,20 +92,176 @@ function createTables(db) {
   db.getDBHandler().exec("CREATE INDEX IF NOT EXISTS idx_games_closed ON games(closed)")
 }
 
-/**
- * DB Init
- * @param {} force ... force Recerattion
- */
-function DBInit(force = false) {
+function backupSql(dbPath, backupPath, options = {}) {
+  const { includeDropStatements = true, includeCreateStatements = true, includeData = true } = options
+
+  const absoluteDbPath = path.resolve(__dirname, dbPath)
+  const absoluteBackupDir = path.resolve(__dirname, backupPath)
+
+  const timestamp = new Date().toISOString().split("T")[0]
+  const dbName = path.basename(dbPath, ".db") // Gets "chessapp" from "chessapp.db"
+  const backupFileName = `${dbName}_backup_${timestamp}.sql`
+  const absoluteBackupFilePath = path.join(absoluteBackupDir, backupFileName)
+
+  const db = new Database(absoluteDbPath)
+
   // Ensure the DB directory exists
-  const dbDir = path.dirname("./DB/chessapp.db")
-  if (!fs.existsSync(dbDir)) {
-    fs.mkdirSync(dbDir, { recursive: true })
+  if (!fs.existsSync(absoluteBackupDir)) {
+    fs.mkdirSync(absoluteBackupDir, { recursive: true })
   }
 
-  // Create database connection (will create file if it doesn't exist)
-  const db = new SQLiteDatabase("./DB/chessapp.db")
+  try {
+    let dump = "-- SQLite Database Dump\n"
+    dump += `-- Generated: ${new Date().toISOString()}\n`
+    dump += "PRAGMA foreign_keys=OFF;\n"
+    dump += "BEGIN TRANSACTION;\n\n"
 
-  initializeDatabase(db)
+    const tables = db
+      .prepare(
+        `
+            SELECT name FROM sqlite_master 
+            WHERE type='table' 
+            AND name NOT LIKE 'sqlite_%'
+        `,
+      )
+      .all()
+
+    for (const table of tables) {
+      console.log(`📦 Processing table: ${table.name}`)
+
+      // Add DROP TABLE IF EXISTS (optional)
+      if (includeDropStatements) {
+        dump += `-- Drop table if exists\n`
+        dump += `DROP TABLE IF EXISTS "${table.name}";\n\n`
+      }
+
+      // Get CREATE statement (optional)
+      if (includeCreateStatements) {
+        const createStmt = db.prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name=?").get(table.name)
+
+        if (createStmt) {
+          dump += `-- Create table structure\n`
+          dump += createStmt.sql + ";\n\n"
+        }
+      }
+
+      // Get all data (optional)
+      if (includeData) {
+        const rows = db.prepare(`SELECT * FROM "${table.name}"`).all()
+
+        if (rows.length > 0) {
+          dump += `-- Insert data for ${table.name}\n`
+
+          for (const row of rows) {
+            const values = Object.values(row)
+              .map((val) => (val === null ? "NULL" : `'${String(val).replace(/'/g, "''")}'`))
+              .join(",")
+
+            dump += `INSERT INTO "${table.name}" VALUES(${values});\n`
+          }
+          dump += "\n"
+        } else {
+          dump += `-- No data in ${table.name}\n\n`
+        }
+      }
+    }
+
+    dump += "COMMIT;\n"
+    fs.writeFileSync(absoluteBackupFilePath, dump)
+    console.log(`✅ SQL dump created: ${absoluteBackupFilePath}`)
+  } catch (error) {
+    console.error("❌ Dump failed:", error)
+    throw error
+  } finally {
+    db.close()
+  }
+}
+
+function findLatestSqlDump(backupDir, pattern = "chessapp_backup_") {
+  const absoluteBackupDir = path.resolve(__dirname, backupDir)
+
+  if (!fs.existsSync(absoluteBackupDir)) {
+    throw new Error(`Backup directory not found: ${absoluteBackupDir}`)
+  }
+
+  // Find all matching dump files
+  const dumpFiles = fs
+    .readdirSync(absoluteBackupDir)
+    .filter((file) => {
+      return file.startsWith(pattern) && (file.endsWith(".sql") || file.endsWith(".db"))
+    })
+    .map((file) => {
+      const filePath = path.join(absoluteBackupDir, file)
+      const stats = fs.statSync(filePath)
+      return {
+        name: file,
+        path: filePath,
+        created: stats.birthtime,
+        modified: stats.mtime,
+        size: stats.size,
+      }
+    })
+    .sort((a, b) => b.created - a.created) // Sort by creation time, newest first
+
+  if (dumpFiles.length === 0) {
+    return false
+  }
+
+  return dumpFiles[0] // Return the latest
+}
+
+function restoreFromSqlDump(dumpPath, targetDbPath) {
+  const db = new Database(targetDbPath)
+
+  try {
+    const sqlDump = fs.readFileSync(dumpPath, "utf8")
+    db.exec(sqlDump)
+    console.log(`Database restored from SQL dump: ${targetDbPath}`)
+  } catch (error) {
+    console.error("Restore from dump failed:", error)
+  } finally {
+    db.close()
+  }
+}
+
+function restoreFromLatestDump(backupDir, targetDbPath, pattern = "chessapp_backup_") {
+  const absoluteDbPath = path.resolve(__dirname, targetDbPath)
+  const absoluteBackupDir = path.resolve(__dirname, backupDir)
+
+  const db = new Database(absoluteDbPath)
+
+  try {
+    // Find the latest dump
+    const latestDump = findLatestSqlDump(backupDir, pattern)
+    if (latestDump !== false) {
+      console.log(`🔄 Restoring from: ${latestDump.name}`)
+
+      return restoreFromSqlDump(latestDump.path, absoluteDbPath)
+    }
+  } catch (error) {
+    console.error("❌ Restore failed:", error.message)
+    throw error
+  }
+}
+
+/**
+ * DB Init
+ * @param {} init ... Init Tables and use Backup File
+ * @param {} backupData ... create a SQL Dump
+ */
+function DBInit(options = {}) {
+  const { init = true, backupData = false } = options
+
+  const dbDir = path.resolve(__dirname, "../DB/chessapp.db")
+
+  // Create database connection (will create file if it doesn't exist)
+  if (init) {
+    const db = new SQLiteDatabase(dbDir)
+    initializeDatabase(db)
+    restoreFromLatestDump("../DBbackups/", "../DB/chessapp.db", "chessapp_backup")
+  }
+  if (backupData) {
+    backupSql("../DB/chessapp.db", "../DBbackups/", { includeDropStatements: true, includeCreateStatements: true, includeData: true })
+  }
 }
 module.exports = DBInit

@@ -1,4 +1,5 @@
 const Database = require("better-sqlite3")
+const moment = require("moment")
 
 class SQLiteDatabase {
   constructor(dbPath = "./database.db", options = {}) {
@@ -42,9 +43,14 @@ class SQLiteDatabase {
    *
    * @returns Get all Users
    */
-  getPlayers(userid) {
+  getPlayers(userid, onlyOnline) {
     const ID = Number(userid)
-    const query = this.db.prepare("SELECT id, username,online FROM users WHERE id<>?")
+    let query
+    if (onlyOnline === false) {
+      query = this.db.prepare("SELECT id, username,online FROM users WHERE id<>?")
+    } else {
+      query = this.db.prepare("SELECT id, username,online FROM users WHERE online=1 AND id<>?")
+    }
     const result = query.all(ID)
     // Convert to boolean in JavaScript
     const users = result.map((user) => ({
@@ -54,16 +60,20 @@ class SQLiteDatabase {
     return users
   }
 
-  createNewGame() {
+  createNewGame(gamename, owner, player) {
     // Create a new game
     const newGame = {
-      name: "Chess Match #1",
+      name: gamename,
       number_of_players: 2,
-      user_id: 1,
-      closed: false,
+      user_id: parseInt(owner),
+      opponent: player,
+      closed: 0, //false = 0
+      created_at: moment().format("YYYY-MM-DD HH:mm:ss.SSS"),
     }
-    const gameId = db.insert("games", newGame)
+    const gameId = this.create("games", newGame)
+    return gameId
 
+    /*
     // Find open games
     const openGames = db.select("games", { closed: false })
 
@@ -80,6 +90,7 @@ class SQLiteDatabase {
   JOIN users u ON g.user_id = u.id 
   WHERE g.closed = 0
 `)
+*/
   }
 
   /**

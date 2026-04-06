@@ -9,85 +9,16 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 
 window.$ = window.jQuery = $;
 
-class Lobby {
-  constructor(onJoinGame) {
-    this.onJoinGame = onJoinGame;
-  }
-
-  attachEventListeners() {
-    const joinButton = document.getElementById("joinGame");
-    const playerNameInput = document.getElementById("playerName");
-    const gameIdInput = document.getElementById("gameId");
-
-    const handleJoin = () => {
-      const playerName = playerNameInput.value.trim();
-      const gameId = gameIdInput.value.trim();
-
-      if (playerName) {
-        this.onJoinGame(playerName, gameId);
-      } else {
-        alert("Please enter your name");
-        playerNameInput.focus();
-      }
-    };
-
-    joinButton.addEventListener("click", handleJoin);
-
-    playerNameInput.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") {
-        handleJoin();
-      }
-    });
-
-    gameIdInput.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") {
-        handleJoin();
-      }
-    });
-
-    // Focus on name input
-    setTimeout(() => playerNameInput.focus(), 100);
-  }
-
-  /**
-   * creates a new Chess Game on Server
-   */
-  async createGame() {
-    let data = {
-      username: localStorage.getItem("username"),
-    };
-    const response = await api.post("/creategame", data);
-    if (response.data?.authenticated) {
-      localStorage.setItem("authToken", response.data.token);
-      window.location.href = "/lobby.html";
-      return;
-    }
-  }
-}
-
 $(function () {
   // Start the lobby
-  const lobby = new Lobby();
   let selectedPlayers = [];
   let allPlayers = [];
   let stackAllPlayers = [];
 
-  //Debug
-  const mm = document.getElementById("newgameModal");
-  if (mm) {
-    const modal = new Modal(mm);
-    loadPlayers();
-    modal.show();
-
-    $("#game-name").val("TESTGame");
-  }
-  //Debug
-
   // Load players from API
   async function loadPlayers() {
     try {
-      localStorage.getItem("authToken");
-      const response = await api.post("api/getplayers");
+      const response = await api.post("/api/getplayers");
       allPlayers = response.data;
       const playersArray = Object.values(allPlayers.players);
       updatePlayerDropdown(playersArray);
@@ -199,6 +130,31 @@ $(function () {
     }
   });
 
+  /**
+   * creates a new Chess Game on Server
+   */
+  async function createGame(gamename, gamerid) {
+    let data = {
+      name: gamename,
+      owner: localStorage.getItem("userId"),
+      player: gamerid,
+    };
+    const response = await api.post("/api/creategame", data);
+    if (response.data?.authenticated) {
+      //window.location.href = "/lobby.html";
+      return;
+    }
+  }
+
+  $("#newgameModal").on("submit", function (e) {
+    let selectedPlayer = $("#selected-players>.badge");
+    if (selectedPlayer.length > 0) {
+      let gamename = $("#game-name").val();
+      let gamerid = selectedPlayer.find("button").data("player-id");
+      createGame(gamename, gamerid);
+    }
+  });
+
   // Use native event listeners for Bootstrap 5
   const modalElement = document.getElementById("newgameModal");
   if (modalElement) {
@@ -210,4 +166,35 @@ $(function () {
       // Cleanup code here
     });
   }
+
+  //Update online Players in Lobby
+  async function lobbyPlayers() {
+    try {
+      let data = {
+        onlyOnline: true,
+      };
+      const response = await api.post("/api/getplayers", data);
+      allPlayers = response.data;
+      const playersArray = Object.values(allPlayers.players);
+      console.log(playersArray);
+
+      const list = $(".player-list ul");
+
+      playersArray.forEach((player) => {
+        console.log(player);
+
+        list.append(`
+          <li class="player-item" data-id="${player.id}">
+              <span>${player.username}</span>
+              <div class="action-icons">
+                <i class="bi bi-chat" title="Chat"></i>
+              </div>
+            </li>`);
+      });
+    } catch (error) {
+      console.error("Error loading players:", error);
+    }
+  }
+
+  lobbyPlayers();
 });
