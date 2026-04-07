@@ -36,8 +36,7 @@ if (process.env.DEBUG) {
 }
 
 //Database init
-//DBINit({ init: false, backupData: true })
-DBINit({ init: true, backupData: true })
+DBINit({ init: false, backupData: true })
 
 // Socket handling
 gameHandler(io)

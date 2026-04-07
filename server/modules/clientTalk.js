@@ -52,8 +52,19 @@ async function creategame(req, res) {
   })
 }
 
+async function getgames(req, res) {
+  const db = new SQLiteDatabase("./DB/chessapp.db", { verbose: false })
+
+  let allgames = db.getGames(req.userid)
+
+  return res.status(200).json({
+    games: allgames,
+  })
+}
+
 module.exports = {
   login,
   creategame,
   getplayers,
+  getgames,
 }

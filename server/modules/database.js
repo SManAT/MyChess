@@ -59,19 +59,67 @@ class SQLiteDatabase {
     }))
     return users
   }
+  /**
+   *
+   * @returns Get all games of a User
+   */
+  getGames(userid) {
+    const ID = Number(userid)
+    let query = this.db.prepare(`SELECT games.id, name, closed, games.created_at, username, online FROM games
+                                  LEFT JOIN users
+                                  ON games.opponent=users.id
+                                  WHERE user_id=?`)
+    const result = query.all(ID)
+    // Convert to boolean in JavaScript
+    const games = result.map((game) => ({
+      ...game,
+      closed: Boolean(game.closed),
+      online: Boolean(game.online),
+    }))
+    return games
+  }
+
+  /**
+   * unique name function
+   * @param {*} originalName
+   * @returns
+   */
+  ensureUniqueGameName(originalName) {
+    // Check if the original name exists
+    const checkStmt = this.db.prepare("SELECT COUNT(*) as count FROM games WHERE name = ?")
+    let result = checkStmt.get(originalName)
+
+    // If name doesn't exist, return it as is
+    if (result.count === 0) {
+      return originalName
+    }
+
+    // If name exists, find a unique variant
+    let counter = 1
+    let newName = `${originalName}(${counter})`
+
+    while (true) {
+      result = checkStmt.get(newName)
+      if (result.count === 0) {
+        return newName
+      }
+      counter++
+      newName = `${originalName} (${counter})`
+    }
+  }
 
   createNewGame(gamename, owner, player) {
     // Create a new game
     const newGame = {
-      name: gamename,
+      name: this.ensureUniqueGameName(gamename),
       number_of_players: 2,
       user_id: parseInt(owner),
       opponent: player,
       closed: 0, //false = 0
       created_at: moment().format("YYYY-MM-DD HH:mm:ss.SSS"),
     }
-    const gameId = this.create("games", newGame)
-    return gameId
+
+    return this.create("games", newGame)
 
     /*
     // Find open games

@@ -121,13 +121,12 @@ $(function () {
     //$("#player-search").trigger("input"); // Refresh dropdown
   });
 
+  const modalElement = document.getElementById("newgameModal");
+  const modal = new Modal(modalElement);
+
   $("#game-add").on("click", function () {
-    const modalElement = document.getElementById("newgameModal");
-    if (modalElement) {
-      const modal = new Modal(modalElement);
-      loadPlayers();
-      modal.show();
-    }
+    loadPlayers();
+    modal.show();
   });
 
   /**
@@ -140,32 +139,23 @@ $(function () {
       player: gamerid,
     };
     const response = await api.post("/api/creategame", data);
-    if (response.data?.authenticated) {
-      //window.location.href = "/lobby.html";
-      return;
-    }
+    loadOwnerGames();
   }
 
-  $("#newgameModal").on("submit", function (e) {
+  $("#newgameModal form").on("submit", function (e) {
+    e.preventDefault();
     let selectedPlayer = $("#selected-players>.badge");
     if (selectedPlayer.length > 0) {
       let gamename = $("#game-name").val();
       let gamerid = selectedPlayer.find("button").data("player-id");
       createGame(gamename, gamerid);
+
+      // Close modal and reset form
+      modal.hide();
+      this.reset();
+      $("#selected-players").html("");
     }
   });
-
-  // Use native event listeners for Bootstrap 5
-  const modalElement = document.getElementById("newgameModal");
-  if (modalElement) {
-    modalElement.addEventListener("shown.bs.modal", function () {
-      document.getElementById("group-name")?.focus();
-    });
-
-    modalElement.addEventListener("hidden.bs.modal", function () {
-      // Cleanup code here
-    });
-  }
 
   //Update online Players in Lobby
   async function lobbyPlayers() {
@@ -176,13 +166,9 @@ $(function () {
       const response = await api.post("/api/getplayers", data);
       allPlayers = response.data;
       const playersArray = Object.values(allPlayers.players);
-      console.log(playersArray);
-
       const list = $(".player-list ul");
 
       playersArray.forEach((player) => {
-        console.log(player);
-
         list.append(`
           <li class="player-item" data-id="${player.id}">
               <span>${player.username}</span>
@@ -196,5 +182,46 @@ $(function () {
     }
   }
 
+  //Update online Players in Lobby
+  async function loadOwnerGames() {
+    try {
+      let data = {};
+      const response = await api.post("/api/getgames", data);
+      let allGames = response.data;
+
+      const gamesArray = Object.values(allGames.games);
+      const list = $(".game-list ul");
+      gamesArray.forEach((game) => {
+        console.log(game);
+
+        //Opponent Online?
+        let badge_color = "sucess";
+        if (game.online === false) {
+          let badge_color = "alert";
+        }
+
+        list.append(`
+          <li class="game-item" data-id="${game.id}">
+              <span>${game.name}</span>
+
+              <span class="badge bg-${badge_color} me-2 mb-2 thebadge">
+              <span class="txt">
+                ${game.username}
+              </span>
+            </span>
+
+              <span>${game.created_at}</span>
+              <div class="action-icons">
+                <i class="bi bi-play-circle" title="Join"></i>
+                <i class="bi bi-chat" title="Chat"></i>
+              </div>
+            </li>`);
+      });
+    } catch (error) {
+      console.error("Error loading players:", error);
+    }
+  }
+
   lobbyPlayers();
+  loadOwnerGames();
 });

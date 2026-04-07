@@ -9,6 +9,7 @@ router.post("/login", client.login)
 
 router.post("/creategame", authenticateToken, client.creategame)
 router.post("/getplayers", authenticateToken, client.getplayers)
+router.post("/getgames", authenticateToken, client.getgames)
 
 // middleware routes
 /*
