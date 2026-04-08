@@ -7,6 +7,8 @@ import { Modal } from "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
+import moment from "moment";
+
 window.$ = window.jQuery = $;
 
 $(function () {
@@ -195,27 +197,33 @@ $(function () {
         console.log(game);
 
         //Opponent Online?
-        let badge_color = "sucess";
+        let badge_color = "online";
         if (game.online === false) {
-          let badge_color = "alert";
+          badge_color = "offline";
         }
+
+        let created = moment(game.created_at);
+        console.log(created);
 
         list.append(`
           <li class="game-item" data-id="${game.id}">
-              <span>${game.name}</span>
-
-              <span class="badge bg-${badge_color} me-2 mb-2 thebadge">
-              <span class="txt">
-                ${game.username}
+            <div class="d-flex justify-content-between flex-wrap" style="width:100%;">
+            <div>
+              <b>${game.name}</b>
+              vs.
+              <span class="onlinebadge ${badge_color}">
+                <span class="txt">${game.username}</span>
               </span>
-            </span>
-
-              <span>${game.created_at}</span>
+            </div>
+            <div>
               <div class="action-icons">
+              ${created.format("DD.MM.YYYY")}
                 <i class="bi bi-play-circle" title="Join"></i>
                 <i class="bi bi-chat" title="Chat"></i>
               </div>
-            </li>`);
+            </div>
+            </div>
+          </li>`);
       });
     } catch (error) {
       console.error("Error loading players:", error);
@@ -224,4 +232,6 @@ $(function () {
 
   lobbyPlayers();
   loadOwnerGames();
+  //Username
+  $(".user-dropdown>span").html(localStorage.getItem("username"));
 });

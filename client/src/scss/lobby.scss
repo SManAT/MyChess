@@ -73,3 +73,19 @@ a {
   font-weight: 500;
   line-height: 1.2;
 }
+
+.onlinebadge {
+  border-radius: 0.2em;
+  padding: 0 0.5em;
+
+  &.online {
+    color: #fff;
+    background: #157347;
+  }
+
+  &.offline {
+    color: #bbb;
+    background: #dc3545;
+  }
+
+}

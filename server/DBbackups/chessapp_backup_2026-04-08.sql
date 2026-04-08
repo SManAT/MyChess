@@ -1,5 +1,5 @@
 -- SQLite Database Dump
--- Generated: 2026-04-06T19:02:33.001Z
+-- Generated: 2026-04-08T10:48:51.842Z
 PRAGMA foreign_keys=OFF;
 BEGIN TRANSACTION;
 
@@ -39,6 +39,8 @@ CREATE TABLE games (
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
 
--- No data in games
+-- Insert data for games
+INSERT INTO "games" VALUES('1','TEST','2','1','4','0','2026-04-07 19:02:27.223');
+INSERT INTO "games" VALUES('2','TEST (1)','2','1','4','0','2026-04-07 19:03:01.371');
 
 COMMIT;
