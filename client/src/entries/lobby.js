@@ -1,15 +1,25 @@
 import "@scss/lobby.scss";
+import "@scss/sweetalert.scss";
 
 import $ from "jquery";
 import api from "../utils/axiosApi.js";
+import tools from "../utils/tools.js";
+import SocketManager from "../utils/socket.js";
 
 import { Modal } from "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
+import Swal from "sweetalert2";
 import moment from "moment";
 
 window.$ = window.jQuery = $;
+
+//User is logged in?
+tools.AuthGuard();
+
+const socketManager = new SocketManager();
+socketManager.connect();
 
 $(function () {
   // Start the lobby
@@ -194,8 +204,6 @@ $(function () {
       const gamesArray = Object.values(allGames.games);
       const list = $(".game-list ul");
       gamesArray.forEach((game) => {
-        console.log(game);
-
         //Opponent Online?
         let badge_color = "online";
         if (game.online === false) {
@@ -203,7 +211,6 @@ $(function () {
         }
 
         let created = moment(game.created_at);
-        console.log(created);
 
         list.append(`
           <li class="game-item" data-id="${game.id}">
@@ -218,8 +225,6 @@ $(function () {
             <div>
               <div class="action-icons">
               ${created.format("DD.MM.YYYY")}
-                <i class="bi bi-play-circle" title="Join"></i>
-                <i class="bi bi-chat" title="Chat"></i>
               </div>
             </div>
             </div>
@@ -231,7 +236,48 @@ $(function () {
   }
 
   lobbyPlayers();
-  loadOwnerGames();
+  loadOwnerGames().then(() => {
+    $("li.game-item").on("click", function () {
+      let id = $(this).data("id");
+      const badge = $(this).find(".onlinebadge");
+      console.log(badge);
+      let opponent = badge.find(".txt").html();
+      let online = false;
+      if (badge.hasClass("online")) {
+        online = true;
+      }
+
+      if (online) {
+        Swal.fire({
+          html: `<b>Partie</b><br>gegen<br> <i>${opponent}</i><br>spielen?`,
+          showDenyButton: true,
+          confirmButtonText: "Ja",
+          denyButtonText: "Nein",
+          customClass: {
+            actions: "my-actions",
+            confirmButton: "order-2",
+            denyButton: "order-1",
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // open window with POST
+            tools.redirectWithPost("/game.html", {
+              gameId: id,
+            });
+          }
+        });
+      } else {
+        Swal.fire({
+          title: "Dein Gegenüber ist offline!",
+          icon: "success",
+          iconHtml: '<img src="/src/public/cat/cat-offline.png">',
+          customClass: {
+            icon: "status-message",
+          },
+        });
+      }
+    });
+  });
   //Username
   $(".user-dropdown>span").html(localStorage.getItem("username"));
 });

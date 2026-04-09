@@ -1,16 +1,22 @@
-const Game = require("../../game/ChessGame")
+const Game = require("../game/ChessGame")
+const SQLiteDatabase = require("./database")
 
 const games = new Map()
 const players = new Map()
 
-const logger = require("../logger").logger
+const logger = require("./logger").logger
 
-function gameHandler(io) {
+function socketHandler(io) {
   //Client connects
   io.on("connection", async (socket) => {
+    const db = new SQLiteDatabase("./DB/chessapp.db", { verbose: false })
+
+    const username = socket.handshake.auth.username
+    const timestamp = socket.handshake.auth.timestamp
+
     logger.info("Player connected:", socket.id)
     //store name and id
-    await mysql.storeClientMapping(name, socket.id)
+    db.saveSocket(username, socket.id)
 
     socket.on("join-game", ({ playerName, gameId }) => {
       let game
@@ -105,4 +111,4 @@ function gameHandler(io) {
   })
 }
 
-module.exports = gameHandler
+module.exports = socketHandler

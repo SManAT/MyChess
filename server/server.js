@@ -2,7 +2,7 @@ const express = require("express")
 const http = require("http")
 const socketIo = require("socket.io")
 const cors = require("cors")
-const gameHandler = require("./modules/socket/gameHandler")
+const socketHandler = require("./modules/socketHandler.js")
 const DBINit = require("./modules/dbInit")
 const path = require("path")
 const listEndpoints = require("express-list-endpoints")
@@ -39,7 +39,7 @@ if (process.env.DEBUG) {
 DBINit({ init: false, backupData: true })
 
 // Socket handling
-gameHandler(io)
+socketHandler(io)
 
 const serverIP = process.env.APP_IP
 const port = process.env.APP_PORT

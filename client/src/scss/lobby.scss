@@ -1,3 +1,8 @@
+body.swal2-shown>[aria-hidden='true'] {
+  transition: 0.1s filter;
+  filter: blur(3px);
+}
+
 a {
   text-decoration: none !important;
 }
@@ -18,6 +23,10 @@ a {
   margin-bottom: 5px;
   background-color: #e9ecef;
   border-radius: 3px;
+
+  &:hover {
+    background-color: #eff5a0;
+  }
 }
 
 .action-icons {
