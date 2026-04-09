@@ -270,7 +270,7 @@ $(function () {
         Swal.fire({
           title: "Dein Gegenüber ist offline!",
           icon: "success",
-          iconHtml: '<img src="/src/public/cat/cat-offline.png">',
+          iconHtml: '<img src="/src/public/cat/cat-sleep.png">',
           customClass: {
             icon: "status-message",
           },
