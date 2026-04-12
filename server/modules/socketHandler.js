@@ -1,5 +1,6 @@
 const connectionManager = require("./connectionManager.js")
 const socketUtils = require("./socketUtils")
+const SQLiteDatabase = require("./database")
 const logger = require("./logger").logger
 
 const Game = require("../game/ChessGame")
@@ -44,20 +45,11 @@ function socketHandler(io) {
     })
 
     // ---------------------------------------------------------
-    socket.on("join-game", ({ playerName, gameId }) => {
-      let game
+    socket.on("join-game", ({ userId, gameId }) => {
+      const db = new SQLiteDatabase("./DB/chessapp.db", { verbose: false })
 
-      if (gameId && games.has(gameId)) {
-        game = games.get(gameId)
-      } else {
-        // Find an available game or create new one
-        game = Array.from(games.values()).find((g) => g.gameStatus === "waiting" && Object.keys(g.players).length < 2)
-
-        if (!game) {
-          game = new Game()
-          games.set(game.id, game)
-        }
-      }
+      // Serach game and set userId Online
+      db.setUserInGameOnline(gameId, userId)
 
       const joined = game.addPlayer(socket.id, playerName)
       if (!joined) {
@@ -119,7 +111,7 @@ function socketHandler(io) {
     socket.on("disconnect", () => {
       const username = connectionManager.getUsername(socket.id)
       // manuell schon ausgelogged?
-      if (username !== null){
+      if (username !== null) {
         // Remove from connection manager
         connectionManager.removeConnection(socket.id)
         logger.info(`User ${username} logged out ...`)

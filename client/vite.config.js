@@ -60,6 +60,7 @@ export default defineConfig({
             "/": "/src/index.html",
             "/index.html": "/src/index.html",
             "/lobby.html": "/src/lobby.html",
+            "/game.html": "/src/game.html",
           };
 
           const url = req.url?.split("?")[0];

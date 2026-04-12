@@ -1,40 +1,63 @@
-import "@scss/login.scss";
-
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 import $ from "jquery";
 window.$ = $;
 
-import socketManager from "./utils/socket.js";
-import { ChessBoard } from "./components/ChessBoard.js";
-import { GameLobby } from "./components/GameLobby.js";
-import { GameInfo } from "./components/GameInfo.js";
+import socketManager from "../utils/socketManager.js";
+import { ChessBoard } from "../chess/ChessBoard.js";
+import { GameInfo } from "../chess/GameInfo.js";
 
 class ChessApp {
   constructor() {
     this.socket = null;
     this.gameState = null;
     this.playerColor = null;
-    this.playerId = null;
-    this.currentView = "lobby";
+    this.gameId = null;
+
+    this.socket = socketManager.getSocket();
+    if (this.socket && this.socket.connected) {
+      // Use existing connection
+    } else {
+      // Reconnect if needed
+      socketManager.connect();
+    }
 
     this.chessBoard = new ChessBoard(
       (from, to) => this.makeMove(from, to),
       (row, col) => this.handleSquareClick(row, col),
     );
-    this.gameLobby = new GameLobby((name, gameId) =>
-      this.joinGame(name, gameId),
-    );
-    this.gameInfo = new GameInfo();
 
+    this.gameId = localStorage.getItem("gameId");
+    this.username = localStorage.getItem("username");
+    this.userId = localStorage.getItem("userId");
     this.init();
   }
 
   init() {
-    this.socket = socketManager.connect();
-    this.setupSocketListeners();
+    console.log("Game Id: " + this.gameId);
+    console.log("User joined Game: " + this.username);
+    this.joinGame(this.gameId);
+
+
+HERE WE ARE
+
+
+    this.gameInfo = new GameInfo();
+
+
     this.render();
+  }
+
+  /**
+   * Send to Server Im joined the game
+   * @param {*} gameId
+   */
+  joinGame(gameId) {
+    socketManager.emit("join-game", {
+      userId: this.userId,
+      gameId: gameId || undefined,
+    });
   }
 
   setupSocketListeners() {
@@ -93,13 +116,6 @@ class ChessApp {
     });
   }
 
-  joinGame(playerName, gameId) {
-    socketManager.emit("join-game", {
-      playerName,
-      gameId: gameId || undefined,
-    });
-  }
-
   makeMove(from, to) {
     if (this.gameState && this.gameState.currentPlayer === this.playerColor) {
       socketManager.emit("make-move", { from, to });
@@ -148,13 +164,13 @@ class ChessApp {
   }
 
   render() {
-    const app = document.getElementById("app");
+    const board = document.getElementById("chess-board");
 
     if (this.currentView === "lobby") {
-      app.innerHTML = this.gameLobby.render();
+      board.innerHTML = this.gameLobby.render();
       this.gameLobby.attachEventListeners();
     } else {
-      app.innerHTML = `
+      board.innerHTML = `
         <div class="game-container">
           ${this.chessBoard.getHTML()}
           ${this.gameInfo.getHTML()}

@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
 
-class SocketManager {
+class socketManager {
   constructor() {
     this.socket = null;
     this.isConnected = false;
@@ -42,7 +42,7 @@ class SocketManager {
       this.socket = io(socketUrl, socketOptions);
       this.setupDefaultEventHandlers();
 
-      return this;
+      return this.socket;
     } catch (error) {
       console.error("Failed to initialize SocketManager:", error);
       throw error;
@@ -61,6 +61,7 @@ class SocketManager {
 
     this.socket.on("disconnect", (reason) => {
       this.isConnected = false;
+      this.socket = null;
       console.log("Disconnected:", reason);
       this.emit("socketManager:disconnected", { reason });
     });
@@ -199,6 +200,7 @@ class SocketManager {
   disconnect() {
     if (this.socket) {
       this.socket.disconnect();
+      this.socket = null;
     }
     return this;
   }
@@ -227,10 +229,10 @@ class SocketManager {
     console.log("SocketManager destroyed");
   }
 
-  // Get the raw socket instance (use with caution)
   getSocket() {
     return this.socket;
   }
 }
 
-export default SocketManager;
+// Export singleton instance
+export default new socketManager();

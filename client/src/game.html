@@ -9,63 +9,7 @@
 </head>
 
 <body>
-  <!-- Modal -->
-  <div class="modal fade" id="newgameModal" tabindex="-1" aria-labelledby="newgameModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="newgameModalLabel">Neue Partie erstellen</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <form id="newGameForm">
-          <div class="modal-body">
-            <div class="mb-3">
-              <label for="game-name" class="form-label">
-                Name der Partie
-              </label>
-              <input type="text" class="form-control" id="game-name" name="gameName" required placeholder="Spiel ...">
-            </div>
 
-            <!-- Player Selection with Search -->
-            <div class="mb-3">
-              <label for="player-select" class="form-label">
-                <i class="bi bi-people me-2"></i>Spieler einladen
-              </label>
-              <div class="dropdown">
-                <input type="text" class="form-control dropdown-toggle" id="player-search" data-bs-toggle="dropdown" placeholder="Suche Spieler ..." autocomplete="off">
-                <ul class="dropdown-menu w-100" id="player-dropdown">
-                  <!-- Players will be populated here -->
-                </ul>
-              </div>
-
-              <!-- Selected Players Display -->
-              <div id="selected-players" class="mt-2">
-                <!-- Selected player badges will appear here -->
-              </div>
-            </div>
-
-            <!-- Game Type (Optional) -->
-            <div class="mb-3">
-              <label for="game-type" class="form-label">
-                <i class="bi bi-gear me-2"></i>Game Type
-              </label>
-              <select class="form-select" id="game-type" name="gameType">
-                <option value="standard">Standard</option>
-              </select>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-              <i class="bi bi-x-circle me-2"></i>Cancel
-            </button>
-            <button type="submit" class="btn btn-primary">
-              <i class="bi bi-plus-circle me-2"></i>Create Game
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
 
   <nav class="navbar" style="background-color: #e3f2fd;" data-bs-theme="light">
     <div class="container-fluid">
@@ -93,33 +37,10 @@
     </div>
   </nav>
 
-  <div class="container mt-1">
-    <div class="row">
-      <div class="col-12 col-md-6 col-lg-6 offset-lg-0 mt-lg-4">
-        <div class="d-flex justify-content-between">
-          <span class="myh2">Meine Partien</span>
-          <button id="game-add" type="button" class="btn btn-success">
-            <i class="bi bi-plus-circle"></i>
-            Neue Partie
-          </button>
-        </div>
+  <div class="chess-board"></div>
 
-        <div class="game-list mt-lg-3">
-          <ul class="list-unstyled">
-          </ul>
-        </div>
-      </div>
-      <div class="col-12 col-md-6 col-lg-4 offset-lg-2 mt-2 mt-lg-4">
-        <h2>Spieler Online</h2>
-        <div class="player-list mt-lg-3">
-          <ul class="list-unstyled">
-          </ul>
-        </div>
-      </div>
-    </div>
 
-  </div>
-  <script type="module" src="/src/entries/lobby.js"></script>
+  <script type="module" src="/src/entries/game.js"></script>
 </body>
 
 </html>

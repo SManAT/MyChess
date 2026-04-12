@@ -67,8 +67,8 @@ class SQLiteDatabase {
     const ID = Number(userid)
     let query = this.db.prepare(`SELECT games.id, name, closed, games.created_at, username, online FROM games
                                   LEFT JOIN users
-                                  ON games.opponent=users.id
-                                  WHERE user_id=?`)
+                                  ON games.player2_id=users.id
+                                  WHERE player1_id=?`)
     const result = query.all(ID)
     // Convert to boolean in JavaScript
     const games = result.map((game) => ({
@@ -112,33 +112,15 @@ class SQLiteDatabase {
     // Create a new game
     const newGame = {
       name: this.ensureUniqueGameName(gamename),
-      number_of_players: 2,
-      user_id: parseInt(owner),
-      opponent: player,
+      player1_id: parseInt(owner),
+      player2_id: player,
+      player1_inGame: 0,
+      player2_inGame: 0,
       closed: 0, //false = 0
       created_at: moment().format("YYYY-MM-DD HH:mm:ss.SSS"),
     }
 
     return this.create("games", newGame)
-
-    /*
-    // Find open games
-    const openGames = db.select("games", { closed: false })
-
-    // Find games by user
-    const userGames = db.select("games", { user_id: 1 })
-
-    // Close a game
-    db.update("games", { id: gameId }, { closed: true })
-
-    // Get game with user info (if your CRUD library supports joins)
-    const gamesWithUsers = db.query(`
-  SELECT g.*, u.name as creator_name 
-  FROM games g 
-  JOIN users u ON g.user_id = u.id 
-  WHERE g.closed = 0
-`)
-*/
   }
 
   /**
@@ -578,6 +560,26 @@ class SQLiteDatabase {
    */
   userExists(identifier, field = "email") {
     return this.exists("users", { [field]: identifier })
+  }
+
+  setUserInGameOnline(gameId, userId) {
+    //which player am I player1 or player2
+    const sql1 = this.db.prepare(`SELECT player1_id, player2_id from games WHERE id=?`)
+    let result = sql1.get(gameId)
+    let player1 = false
+    if (result.player1_id === parseInt(userId)) {
+      player1 = true
+    }
+
+    let col = "player2_inGame"
+    if (player1) {
+      col = "player1_inGame"
+    }
+
+    const sql = this.db.prepare(`UPDATE games
+                                  SET ${col} = ?
+                                  WHERE id=?`)
+    sql.run(1, gameId)
   }
 }
 

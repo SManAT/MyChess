@@ -18,9 +18,7 @@ function initializeDatabase(db) {
     )
     .all()
 
-  if (tables.length === 0) {
-    createTables(db)
-  }
+  createTables(db)
 }
 
 function dropExistingTables(db) {
@@ -65,8 +63,10 @@ function createTables(db) {
     id: "INTEGER PRIMARY KEY AUTOINCREMENT",
     name: "TEXT NOT NULL",
     number_of_players: "INTEGER NOT NULL",
-    user_id: "INTEGER NOT NULL",
-    opponent: "INTEGER NOT NULL",
+    player1_id: "INTEGER NOT NULL",
+    player2_id: "INTEGER NOT NULL",
+    player1_inGame: "INTEGER NOT NULL DEFAULT 0 CHECK (closed IN (0, 1))",
+    player2_inGame: "INTEGER NOT NULL DEFAULT 0 CHECK (closed IN (0, 1))",
     closed: "INTEGER NOT NULL DEFAULT 0 CHECK (closed IN (0, 1))",
     created_at: "DATETIME DEFAULT CURRENT_TIMESTAMP",
   }
@@ -76,19 +76,20 @@ function createTables(db) {
     CREATE TABLE IF NOT EXISTS games (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
-      number_of_players INTEGER NOT NULL,
-      user_id INTEGER NOT NULL,
-      opponent INTEGER NOT NULL,
+      player1_id INTEGER NOT NULL,
+      player2_id INTEGER NOT NULL,
+      player1_inGame INTEGER NOT NULL DEFAULT 0 CHECK (closed IN (0, 1)),
+      player2_inGame INTEGER NOT NULL DEFAULT 0 CHECK (closed IN (0, 1)),
       closed INTEGER NOT NULL DEFAULT 0 CHECK (closed IN (0, 1)),
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      FOREIGN KEY (player1_id) REFERENCES users(id) ON DELETE CASCADE
     )
   `
 
   db.getDBHandler().exec(createGamesTableSQL)
 
   // Create indexes for games table
-  db.getDBHandler().exec("CREATE INDEX IF NOT EXISTS idx_games_user_id ON games(user_id)")
+  db.getDBHandler().exec("CREATE INDEX IF NOT EXISTS idx_games_player1 ON games(player1_id)")
   db.getDBHandler().exec("CREATE INDEX IF NOT EXISTS idx_games_closed ON games(closed)")
 }
 

@@ -4,7 +4,7 @@ import "@scss/sweetalert.scss";
 import $ from "jquery";
 import api from "../utils/axiosApi.js";
 import tools from "../utils/tools.js";
-import SocketManager from "../utils/socket.js";
+import socketManager from "../utils/socketManager.js";
 
 import { Modal } from "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -18,8 +18,7 @@ window.$ = window.jQuery = $;
 //User is logged in?
 tools.AuthGuard();
 
-const socketManager = new SocketManager();
-socketManager.connect();
+const socket = socketManager.connect();
 
 $(function () {
   // Start the lobby
@@ -269,7 +268,6 @@ $(function () {
     $("li.game-item").on("click", function () {
       let id = $(this).data("id");
       const badge = $(this).find(".onlinebadge");
-      console.log(badge);
       let opponent = badge.find(".txt").html();
       let online = false;
       if (badge.hasClass("online")) {
@@ -291,10 +289,8 @@ $(function () {
           },
         }).then((result) => {
           if (result.isConfirmed) {
-            // open window with POST
-            tools.redirectWithPost("/game.html", {
-              gameId: id,
-            });
+            localStorage.setItem("gameId", id);
+            window.location = "/game.html";
           }
         });
       } else {
