@@ -579,11 +579,6 @@ class SQLiteDatabase {
   userExists(identifier, field = "email") {
     return this.exists("users", { [field]: identifier })
   }
-
-  //save the socket id
-  saveSocket(username, socketid) {
-    console.log("SAVE SOCKET")
-  }
 }
 
 module.exports = SQLiteDatabase

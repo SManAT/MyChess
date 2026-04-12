@@ -77,15 +77,18 @@
 
 
       <!-- User dropdown on the right -->
-      <div class="user-dropdown">
-        <a href="#" role="button">
-          <i class=" bi bi-person-circle user-icon"></i>
+      <div class="dropdown">
+        <a class="user-dropdown" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-person-circle user-icon"></i>
           <span>Username</span>
         </a>
-        <a id="logout" href="#">
-          <i class=" bi bi-person-circle user-icon"></i>
-          Logout
-        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+          <li><a class="dropdown-item" href="#">Profile</a></li>
+          <li>
+            <hr class="dropdown-divider">
+          </li>
+          <li><a class="dropdown-item" href="#">Logout</a></li>
+        </ul>
       </div>
     </div>
   </nav>

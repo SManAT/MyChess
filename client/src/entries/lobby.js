@@ -141,6 +141,35 @@ $(function () {
     modal.show();
   });
 
+  async function logout() {
+    let data = {
+      username: localStorage.getItem("username"),
+    };
+    return api
+      .post("/api/logout", data)
+      .then((response) => {
+        console.log("Logout successful:", response.data);
+
+        // Clear storage
+        localStorage.removeItem("userId");
+        localStorage.removeItem("authToken");
+
+        // Redirect
+        window.location.href = "/";
+
+        return response.data;
+      })
+      .catch((error) => {
+        console.error("Logout failed:", error);
+        alert("Logout failed. Please try again.");
+        throw error;
+      });
+  }
+
+  $("#logout").on("click", function () {
+    logout();
+  });
+
   /**
    * creates a new Chess Game on Server
    */
@@ -249,11 +278,13 @@ $(function () {
 
       if (online) {
         Swal.fire({
-          html: `<b>Partie</b><br>gegen<br> <i>${opponent}</i><br>spielen?`,
+          html: `<b>Partie</b> gegen <i>${opponent}</i> spielen?`,
           showDenyButton: true,
           confirmButtonText: "Ja",
           denyButtonText: "Nein",
+          iconHtml: '<img src="/src/public/cat/cat-chess.png">',
           customClass: {
+            icon: "my-cats",
             actions: "my-actions",
             confirmButton: "order-2",
             denyButton: "order-1",
@@ -272,7 +303,7 @@ $(function () {
           icon: "success",
           iconHtml: '<img src="/src/public/cat/cat-sleep.png">',
           customClass: {
-            icon: "status-message",
+            icon: "my-cats",
           },
         });
       }

@@ -54,10 +54,8 @@ class SocketManager {
     if (!this.socket) return;
 
     this.socket.on("connect", () => {
-      console.log("BBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
       this.isConnected = true;
       this.reconnectAttempts = 0;
-      console.log("Connected to server:", this.socket.id);
       this.emit("socketManager:connected", { id: this.socket.id });
     });
 

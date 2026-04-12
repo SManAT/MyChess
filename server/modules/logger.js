@@ -50,7 +50,7 @@ const logger = winston.createLogger({
   transports: [
     fileTransport,
     new DebugConsoleLogTransport(),
-    consoleTransport, // Optional: include console transport if you want logs in console
+    //consoleTransport, // Optional: include console transport if you want logs in console
   ],
 })
 
