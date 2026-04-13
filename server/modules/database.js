@@ -582,5 +582,5 @@ class SQLiteDatabase {
     sql.run(1, gameId)
   }
 }
-
+  
 module.exports = SQLiteDatabase

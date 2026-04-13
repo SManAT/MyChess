@@ -37,7 +37,8 @@ if (process.env.DEBUG) {
 
 //Database init
 DBINit({ init: false, backupData: true })
-//neue DB Struktur
+// neue DB Struktur
+// Backups vorher löschen!
 //DBINit({ init: true, backupData: false })
 
 // Socket handling

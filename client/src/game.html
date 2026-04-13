@@ -20,24 +20,26 @@
       </a>
 
 
-      <!-- User dropdown on the right -->
-      <div class="dropdown">
-        <a class="user-dropdown" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="bi bi-person-circle user-icon"></i>
+      <div class="user-dropdown">
+        <a href="#" role="button">
+          <i class=" bi bi-person-circle user-icon"></i>
           <span>Username</span>
         </a>
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-          <li><a class="dropdown-item" href="#">Profile</a></li>
-          <li>
-            <hr class="dropdown-divider">
-          </li>
-          <li><a class="dropdown-item" href="#">Logout</a></li>
-        </ul>
+        <a id="logout" href="#">
+          <i class=" bi bi-person-circle user-icon"></i>
+          BACK
+        </a>
       </div>
     </div>
   </nav>
 
-  <div class="chess-board"></div>
+  <div id="game-wrapper">
+
+    <div id="chess-board">
+      <div id="chessboard" class="chess-board"></div>
+      <div id="gameInfo" class="game-info"></div>
+    </div>
+  </div>
 
 
   <script type="module" src="/src/entries/game.js"></script>

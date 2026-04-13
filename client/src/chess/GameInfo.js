@@ -83,8 +83,4 @@ export class GameInfo {
     const toSquare = files[to[1]] + (8 - to[0]);
     return `${fromSquare}-${toSquare}`;
   }
-
-  getHTML() {
-    return '<div id="gameInfo" class="game-info"></div>';
-  }
 }

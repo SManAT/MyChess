@@ -1,14 +1,28 @@
+import $ from "jquery";
 import { getPieceSymbol, isLightSquare } from "../utils/chessUtils.js";
 
 export class ChessBoard {
   constructor(onMove, onSquareClick) {
-    this.board = null;
+    this.board = [];
     this.selectedSquare = null;
     this.possibleMoves = [];
     this.onMove = onMove;
     this.onSquareClick = onSquareClick;
     this.playerColor = "white";
     this.currentPlayer = "white";
+
+    this.board = this.initBoard();
+  }
+
+  initBoard() {
+    const array = [];
+    for (let i = 0; i < 8; i++) {
+      array[i] = [];
+      for (let j = 0; j < 8; j++) {
+        array[i][j] = null;
+      }
+    }
+    return array;
   }
 
   setBoard(board) {
@@ -42,13 +56,10 @@ export class ChessBoard {
   }
 
   render() {
-    if (!this.board) return "";
-
-    const boardElement = document.getElementById("chessboard");
-    if (!boardElement) return "";
+    const board = $("#chessboard");
+    console.log(board);
 
     let html = "";
-
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
         const displayRow = this.playerColor === "white" ? row : 7 - row;
@@ -70,15 +81,17 @@ export class ChessBoard {
 
         html += `
           <div class="${squareClass}" 
-               data-row="${displayRow}" 
-               data-col="${displayCol}">
+              data-row="${displayRow}" 
+              data-col="${displayCol}">
             ${piece ? `<div class="piece">${getPieceSymbol(piece)}</div>` : ""}
           </div>
         `;
       }
     }
 
-    boardElement.innerHTML = html;
+    console.log(html);
+
+    board.html(html);
     this.attachSquareListeners();
   }
 
@@ -116,9 +129,5 @@ export class ChessBoard {
       // No square selected - select this square
       this.selectSquare(row, col);
     }
-  }
-
-  getHTML() {
-    return '<div id="chessboard" class="chess-board"></div>';
   }
 }

@@ -1,3 +1,7 @@
+import "@scss/lobby.scss";
+import "@scss/chess.scss";
+import "@scss/sweetalert.scss";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
@@ -39,12 +43,7 @@ class ChessApp {
     console.log("User joined Game: " + this.username);
     this.joinGame(this.gameId);
 
-
-HERE WE ARE
-
-
     this.gameInfo = new GameInfo();
-
 
     this.render();
   }
@@ -164,22 +163,9 @@ HERE WE ARE
   }
 
   render() {
-    const board = document.getElementById("chess-board");
-
-    if (this.currentView === "lobby") {
-      board.innerHTML = this.gameLobby.render();
-      this.gameLobby.attachEventListeners();
-    } else {
-      board.innerHTML = `
-        <div class="game-container">
-          ${this.chessBoard.getHTML()}
-          ${this.gameInfo.getHTML()}
-        </div>
-      `;
-
-      this.chessBoard.render();
-      this.gameInfo.render();
-    }
+    this.chessBoard.render();
+    this.gameInfo.render();
+    console.log("RENDERED ------------------");
   }
 }
 

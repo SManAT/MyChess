@@ -1,0 +1,81 @@
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#game-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: 0.5em;
+}
+
+#chess-board {
+  display: flex;
+  flex-grow: 1;
+  gap: 20px;
+  container-type: size;
+  /* Enable container queries */
+
+  #chessboard {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+
+    /* Use container dimensions */
+    width: min(100cqh, 100cqw);
+    /* Use smaller of container height/width */
+    height: min(100cqh, 100cqw);
+    aspect-ratio: 1 / 1;
+
+    border: 2px solid #333;
+    flex-shrink: 0;
+
+
+    .square {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+
+
+      &.light {
+        background: #f9dfc6;
+      }
+
+      &.dark {
+        background: #994c00;
+      }
+
+      &.selected {
+        background: #7fb069 !important;
+      }
+
+      &.possible-move {
+        position: relative;
+
+        &::after {
+          content: '';
+          position: absolute;
+          width: 20px;
+          height: 20px;
+          background: rgba(0, 255, 0, 0.6);
+          border-radius: 50%;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
+      }
+    }
+  }
+}
+
+#gameInfo {
+  background: #fbb1d3;
+  flex: 1;
+  /* Take remaining space */
+  padding: 20px;
+}
