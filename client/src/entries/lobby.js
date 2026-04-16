@@ -228,6 +228,7 @@ $(function () {
       let data = {};
       const response = await api.post("/api/getgames", data);
       let allGames = response.data;
+      console.log(allGames);
 
       const gamesArray = Object.values(allGames.games);
       const list = $(".game-list ul");
@@ -238,10 +239,15 @@ $(function () {
           badge_color = "offline";
         }
 
+        let stat = 1;
+        if (game.closed) {
+          stat = 0;
+        }
+
         let created = moment(game.created_at);
 
         list.append(`
-          <li class="game-item" data-id="${game.id}">
+          <li class="game-item" data-id="${game.id}" data-stat="${stat}>
             <div class="d-flex justify-content-between flex-wrap" style="width:100%;">
             <div>
               <b>${game.name}</b>
@@ -290,6 +296,7 @@ $(function () {
         }).then((result) => {
           if (result.isConfirmed) {
             localStorage.setItem("gameId", id);
+            localStorage.setItem("gameStatus", id);
             window.location = "/game.html";
           }
         });

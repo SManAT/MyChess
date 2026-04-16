@@ -65,9 +65,10 @@ function createTables(db) {
     number_of_players: "INTEGER NOT NULL",
     player1_id: "INTEGER NOT NULL",
     player2_id: "INTEGER NOT NULL",
-    player1_inGame: "INTEGER NOT NULL DEFAULT 0 CHECK (closed IN (0, 1))",
-    player2_inGame: "INTEGER NOT NULL DEFAULT 0 CHECK (closed IN (0, 1))",
-    closed: "INTEGER NOT NULL DEFAULT 0 CHECK (closed IN (0, 1))",
+    player1_inGame: "INTEGER NOT NULL DEFAULT 0 CHECK (player1_inGame IN (0, 1))",
+    player2_inGame: "INTEGER NOT NULL DEFAULT 0 CHECK (player2_inGame IN (0, 1))",
+    stat: "INTEGER NOT NULL",
+    erg: "TEXT NOT NULL",
     created_at: "DATETIME DEFAULT CURRENT_TIMESTAMP",
   }
 
@@ -78,9 +79,10 @@ function createTables(db) {
       name TEXT NOT NULL,
       player1_id INTEGER NOT NULL,
       player2_id INTEGER NOT NULL,
-      player1_inGame INTEGER NOT NULL DEFAULT 0 CHECK (closed IN (0, 1)),
-      player2_inGame INTEGER NOT NULL DEFAULT 0 CHECK (closed IN (0, 1)),
-      closed INTEGER NOT NULL DEFAULT 0 CHECK (closed IN (0, 1)),
+      player1_inGame INTEGER NOT NULL DEFAULT 0 CHECK (player1_inGame IN (0, 1)),
+      player2_inGame INTEGER NOT NULL DEFAULT 0 CHECK (player2_inGame IN (0, 1)),
+      stat INTEGER NOT NULL,
+      erg TEXT NOT NULL,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (player1_id) REFERENCES users(id) ON DELETE CASCADE
     )
@@ -90,7 +92,6 @@ function createTables(db) {
 
   // Create indexes for games table
   db.getDBHandler().exec("CREATE INDEX IF NOT EXISTS idx_games_player1 ON games(player1_id)")
-  db.getDBHandler().exec("CREATE INDEX IF NOT EXISTS idx_games_closed ON games(closed)")
 }
 
 function backupSql(dbPath, backupPath, options = {}) {

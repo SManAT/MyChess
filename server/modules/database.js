@@ -1,5 +1,6 @@
 const Database = require("better-sqlite3")
 const moment = require("moment")
+const GAMESTATS = require("gameStats")
 
 class SQLiteDatabase {
   constructor(dbPath = "./database.db", options = {}) {
@@ -116,7 +117,8 @@ class SQLiteDatabase {
       player2_id: player,
       player1_inGame: 0,
       player2_inGame: 0,
-      closed: 0, //false = 0
+      stat: GAMESTATS.ACTIVE,
+      erg: "",
       created_at: moment().format("YYYY-MM-DD HH:mm:ss.SSS"),
     }
 
@@ -582,5 +584,5 @@ class SQLiteDatabase {
     sql.run(1, gameId)
   }
 }
-  
+
 module.exports = SQLiteDatabase
