@@ -7,9 +7,11 @@ const { authenticateToken } = require("../middleware/JWT.js")
 router.post("/login", client.login)
 router.post("/logout", authenticateToken, client.logout)
 
-router.post("/creategame", authenticateToken, client.creategame)
 router.post("/getplayers", authenticateToken, client.getplayers)
+router.post("/creategame", authenticateToken, client.creategame)
 router.post("/getgames", authenticateToken, client.getgames)
+router.post("/getgamestats", authenticateToken, client.getgamestats)
+
 router.post("/stats", authenticateToken, client.stats)
 router.post("/user/:username/online", authenticateToken, client.isonline)
 

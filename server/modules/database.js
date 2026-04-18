@@ -1,6 +1,6 @@
 const Database = require("better-sqlite3")
 const moment = require("moment")
-const GAMESTATS = require("gameStats")
+const GAMESTATS = require("./gameStats")
 
 class SQLiteDatabase {
   constructor(dbPath = "./database.db", options = {}) {
@@ -66,18 +66,24 @@ class SQLiteDatabase {
    */
   getGames(userid) {
     const ID = Number(userid)
-    let query = this.db.prepare(`SELECT games.id, name, closed, games.created_at, username, online FROM games
+    let query = this.db.prepare(`SELECT games.id, name, stat, games.created_at, username, online FROM games
                                   LEFT JOIN users
                                   ON games.player2_id=users.id
                                   WHERE player1_id=?`)
     const result = query.all(ID)
-    // Convert to boolean in JavaScript
-    const games = result.map((game) => ({
-      ...game,
-      closed: Boolean(game.closed),
-      online: Boolean(game.online),
-    }))
-    return games
+    return result
+  }
+
+  /**
+   * Statistik to games
+   * @param {*} gameid
+   * @returns
+   */
+  getGamesStats(gameid) {
+    const ID = Number(gameid)
+    let query = this.db.prepare(`SELECT name, stat, turn, created_at FROM games WHERE id=?`)
+    const result = query.all(ID)
+    return result
   }
 
   /**
@@ -118,6 +124,7 @@ class SQLiteDatabase {
       player1_inGame: 0,
       player2_inGame: 0,
       stat: GAMESTATS.ACTIVE,
+      turn: 1,
       erg: "",
       created_at: moment().format("YYYY-MM-DD HH:mm:ss.SSS"),
     }

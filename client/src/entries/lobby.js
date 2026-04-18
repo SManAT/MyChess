@@ -5,6 +5,7 @@ import $ from "jquery";
 import api from "../utils/axiosApi.js";
 import tools from "../utils/tools.js";
 import socketManager from "../utils/socketManager.js";
+import GAMESTATS from "../utils/gameStats.js";
 
 import { Modal } from "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -228,26 +229,39 @@ $(function () {
       let data = {};
       const response = await api.post("/api/getgames", data);
       let allGames = response.data;
-      console.log(allGames);
 
-      const gamesArray = Object.values(allGames.games);
       const list = $(".game-list ul");
-      gamesArray.forEach((game) => {
+
+      const sortedGames = allGames.games.sort((a, b) => {
+        // Sort by stat first
+        if (a.stat !== b.stat) {
+          return b.stat - a.stat;
+        }
+
+        // Sort by date using moment
+        const momentA = moment(a.created_at);
+        const momentB = moment(b.created_at);
+        return momentB.diff(momentA); // Newest first
+      });
+
+      sortedGames.forEach((game) => {
         //Opponent Online?
         let badge_color = "online";
         if (game.online === false) {
           badge_color = "offline";
         }
 
-        let stat = 1;
-        if (game.closed) {
-          stat = 0;
-        }
-
         let created = moment(game.created_at);
 
+        let gamestatus = "closed";
+        let icons = `<a class="trash-icon"><i class="bi bi-trash-fill" title="Trash"></i></a>`;
+        if (game.stat === GAMESTATS.ACTIVE) {
+          gamestatus = "active";
+          icons = "";
+        }
+
         list.append(`
-          <li class="game-item" data-id="${game.id}" data-stat="${stat}>
+          <li class="game-item ${gamestatus}" data-id="${game.id}">
             <div class="d-flex justify-content-between flex-wrap" style="width:100%;">
             <div>
               <b>${game.name}</b>
@@ -259,6 +273,7 @@ $(function () {
             <div>
               <div class="action-icons">
               ${created.format("DD.MM.YYYY")}
+              ${icons}
               </div>
             </div>
             </div>
@@ -271,44 +286,69 @@ $(function () {
 
   lobbyPlayers();
   loadOwnerGames().then(() => {
-    $("li.game-item").on("click", function () {
-      let id = $(this).data("id");
-      const badge = $(this).find(".onlinebadge");
-      let opponent = badge.find(".txt").html();
-      let online = false;
-      if (badge.hasClass("online")) {
-        online = true;
-      }
+    $(".trash-icon").on("click", function (e) {
+      e.stopPropagation();
+      const gameId = $(this).closest("li.game-item").data("id");
+      console.log("jjjjjjjjj");
+      console.log(gameId);
+    });
 
-      if (online) {
-        Swal.fire({
-          html: `<b>Partie</b> gegen <i>${opponent}</i> spielen?`,
-          showDenyButton: true,
-          confirmButtonText: "Ja",
-          denyButtonText: "Nein",
-          iconHtml: '<img src="/src/public/cat/cat-chess.png">',
-          customClass: {
-            icon: "my-cats",
-            actions: "my-actions",
-            confirmButton: "order-2",
-            denyButton: "order-1",
-          },
-        }).then((result) => {
-          if (result.isConfirmed) {
-            localStorage.setItem("gameId", id);
-            localStorage.setItem("gameStatus", id);
-            window.location = "/game.html";
+    $("li.game-item").on("click", function (e) {
+      if (!$(e.target).closest(".trash-icon").length) {
+        //game closed?
+        if ($(this).hasClass("closed")) {
+          Swal.fire({
+            html: `Partie ist beendet!`,
+            showDenyButton: false,
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            iconHtml: '<img src="/src/public/cat/cat-sleep.png">',
+            customClass: {
+              icon: "my-cats",
+              actions: "my-actions",
+            },
+          });
+        } else {
+          let id = $(this).data("id");
+          const badge = $(this).find(".onlinebadge");
+          let opponent = badge.find(".txt").html();
+          let online = false;
+          if (badge.hasClass("online")) {
+            online = true;
           }
-        });
-      } else {
-        Swal.fire({
-          title: "Dein Gegenüber ist offline!",
-          icon: "success",
-          iconHtml: '<img src="/src/public/cat/cat-sleep.png">',
-          customClass: {
-            icon: "my-cats",
-          },
-        });
+
+          if (online) {
+            Swal.fire({
+              html: `<b>Partie</b> gegen <i>${opponent}</i> spielen?`,
+              showDenyButton: true,
+              confirmButtonText: "Ja",
+              denyButtonText: "Nein",
+              iconHtml: '<img src="/src/public/cat/cat-chess.png">',
+              customClass: {
+                icon: "my-cats",
+                actions: "my-actions",
+                confirmButton: "order-2",
+                denyButton: "order-1",
+              },
+            }).then((result) => {
+              if (result.isConfirmed) {
+                localStorage.setItem("gameId", id);
+                localStorage.setItem("gameStatus", id);
+                window.location = "/game.html";
+              }
+            });
+          } else {
+            Swal.fire({
+              title: "Dein Gegenüber ist offline!",
+              icon: "success",
+              iconHtml: '<img src="/src/public/cat/cat-sleep.png">',
+              customClass: {
+                icon: "my-cats",
+              },
+            });
+          }
+        }
       }
     });
   });

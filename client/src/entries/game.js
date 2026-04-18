@@ -8,6 +8,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import $ from "jquery";
 window.$ = $;
 
+import api from "../utils/axiosApi.js";
 import socketManager from "../utils/socketManager.js";
 import { ChessBoard } from "../chess/ChessBoard.js";
 import { GameInfo } from "../chess/GameInfo.js";
@@ -38,12 +39,22 @@ class ChessApp {
     this.init();
   }
 
-  init() {
+  async init() {
     console.log("Game Id: " + this.gameId);
     console.log("User joined Game: " + this.username);
+
+    //get Game Stats from server
+    let data = {
+      gameid: this.gameId,
+    };
+    const response = await api.post("/api/getgamestats", data);
+    let stats = response.data;
+
+    console.log(stats);
+
     this.joinGame(this.gameId);
 
-    this.gameInfo = new GameInfo();
+    this.gameInfo = new GameInfo($("gameInfo"));
 
     this.render();
   }

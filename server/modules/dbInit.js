@@ -67,7 +67,8 @@ function createTables(db) {
     player2_id: "INTEGER NOT NULL",
     player1_inGame: "INTEGER NOT NULL DEFAULT 0 CHECK (player1_inGame IN (0, 1))",
     player2_inGame: "INTEGER NOT NULL DEFAULT 0 CHECK (player2_inGame IN (0, 1))",
-    stat: "INTEGER NOT NULL",
+    stat: "INTEGER",
+    turn: "INTEGER",
     erg: "TEXT NOT NULL",
     created_at: "DATETIME DEFAULT CURRENT_TIMESTAMP",
   }
@@ -81,7 +82,8 @@ function createTables(db) {
       player2_id INTEGER NOT NULL,
       player1_inGame INTEGER NOT NULL DEFAULT 0 CHECK (player1_inGame IN (0, 1)),
       player2_inGame INTEGER NOT NULL DEFAULT 0 CHECK (player2_inGame IN (0, 1)),
-      stat INTEGER NOT NULL,
+      stat INTEGER,
+      turn INTEGER,
       erg TEXT NOT NULL,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (player1_id) REFERENCES users(id) ON DELETE CASCADE

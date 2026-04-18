@@ -65,6 +65,17 @@ const clientTalk = {
     })
   },
 
+  async getgamestats(req, res) {
+    const db = new SQLiteDatabase("./DB/chessapp.db", { verbose: false })
+    const { gameid } = req.body
+
+    let stats = db.getGamesStats(gameid)
+
+    return res.status(200).json({
+      gamestats: stats,
+    })
+  },
+
   /**
    * Get Connection Stats
    * @param {*} req

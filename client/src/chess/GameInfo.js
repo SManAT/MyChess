@@ -1,8 +1,9 @@
 export class GameInfo {
-  constructor() {
+  constructor(container) {
     this.gameState = null;
     this.playerColor = null;
     this.playerId = null;
+    this.container = container;
   }
 
   setGameState(gameState) {
@@ -17,8 +18,8 @@ export class GameInfo {
   }
 
   render() {
-    const infoElement = $("gameInfo");
-  
+    const infoElement = this.container;
+
     const { players, currentPlayer, gameStatus, moveHistory } = this.gameState;
     const playerList = Object.values(players);
 

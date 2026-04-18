@@ -88,9 +88,6 @@ export class ChessBoard {
         `;
       }
     }
-
-    console.log(html);
-
     board.html(html);
     this.attachSquareListeners();
   }

@@ -1,3 +1,7 @@
+@use "sass:color";
+
+$closed_color: #f7a83a;
+
 body.swal2-shown>[aria-hidden='true'] {
   transition: 0.1s filter;
   filter: blur(3px);
@@ -24,6 +28,14 @@ a {
   background-color: #e9ecef;
   border-radius: 3px;
 
+  &.active {
+    background-color: #4ed255;
+  }
+
+  &.closed {
+    background-color: $closed_color;
+  }
+
   &:hover {
     background-color: #eff5a0;
   }
@@ -32,6 +44,10 @@ a {
 .action-icons {
   display: flex;
   gap: 10px;
+
+  .trash-icon {
+    color: color.complement($closed_color);
+  }
 }
 
 .navbar {
