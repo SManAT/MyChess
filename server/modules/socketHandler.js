@@ -45,32 +45,36 @@ function socketHandler(io) {
     })
 
     // ---------------------------------------------------------
-    socket.on("join-game", ({ userId, gameId }) => {
+    socket.on("join-game", ({ userId, gameId, username }) => {
       const db = new SQLiteDatabase("./DB/chessapp.db", { verbose: false })
 
-      // Serach game and set userId Online
+      // Search game and set userId Online
       db.setUserInGameOnline(gameId, userId)
 
-      const joined = game.addPlayer(socket.id, playerName)
-      if (!joined) {
-        socket.emit("join-error", "Game is full")
-        return
+      const otherplayer = db.getOtherPlayer(gameId, userId)
+
+      const otherSockets = connectionManager.getSocketsByUser(otherplayer)
+
+      // Socket room name
+      const roomName = `game-${gameId}`
+      // Join current socket to the room
+      socket.join(roomName)
+
+      // Join other player's sockets to the room
+      if (otherSockets && otherSockets.length > 0) {
+        otherSockets.forEach((otherSocket) => {
+          otherSocket.join(roomName)
+        })
       }
 
-      players.set(socket.id, { gameId: game.id, playerName })
-      socket.join(game.id)
-
-      // Send game state to all players in the game
-      io.to(game.id).emit("game-state", game.getGameState())
-
-      // Send player-specific info
-      socket.emit("player-joined", {
-        gameId: game.id,
-        playerId: socket.id,
-        color: game.players[socket.id].color,
+      // to Room
+      socket.to(roomName).emit("player-joined", {
+        userId,
+        username,
+        gameId,
       })
 
-      logger.info(`Player ${playerName} joined game ${game.id}`)
+      logger.info(`Player ${username} joined game ${gameId}`)
     })
 
     // ---------------------------------------------------------

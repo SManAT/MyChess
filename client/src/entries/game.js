@@ -1,6 +1,7 @@
 import "@scss/lobby.scss";
 import "@scss/chess.scss";
 import "@scss/sweetalert.scss";
+import "@scss/notifications.scss";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -50,6 +51,7 @@ class ChessApp {
     const response = await api.post("/api/getgamestats", data);
     let stats = response.data;
 
+    console.log("STATS SSSSSSSSSSSSSSSSSSS");
     console.log(stats);
 
     this.joinGame(this.gameId);
@@ -66,7 +68,8 @@ class ChessApp {
   joinGame(gameId) {
     socketManager.emit("join-game", {
       userId: this.userId,
-      gameId: gameId || undefined,
+      username: this.username,
+      gameId: this.gameId,
     });
   }
 
@@ -180,5 +183,23 @@ class ChessApp {
   }
 }
 
-// Start the application
-new ChessApp();
+$(function () {
+  // Start the application
+  new ChessApp();
+
+  //--------------------------------------------------------------
+  // Listen for server status events -----------------------------
+  window.addEventListener("server-unreachable", (event) => {
+    console.log("Server unreachable:", event.detail);
+    $(".network_status").removeClass("hidden");
+    $("#online_icon").addClass("hidden");
+    $(".network_status").html(
+      '<i class="bi bi-database-x"></i>Server is currently unreachable. Please try again later...',
+    );
+  });
+
+  window.addEventListener("server-reachable", (event) => {
+    $(".network_status").addClass("hidden");
+    $("#online_icon").removeClass("hidden");
+  });
+});

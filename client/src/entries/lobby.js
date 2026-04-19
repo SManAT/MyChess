@@ -1,5 +1,6 @@
 import "@scss/lobby.scss";
 import "@scss/sweetalert.scss";
+import "@scss/notifications.scss";
 
 import $ from "jquery";
 import api from "../utils/axiosApi.js";
@@ -289,7 +290,7 @@ $(function () {
     $(".trash-icon").on("click", function (e) {
       e.stopPropagation();
       const gameId = $(this).closest("li.game-item").data("id");
-      console.log("jjjjjjjjj");
+      console.log("Trash Delete");
       console.log(gameId);
     });
 
@@ -354,4 +355,20 @@ $(function () {
   });
   //Username
   $(".user-dropdown>span").html(localStorage.getItem("username"));
+
+  //--------------------------------------------------------------
+  // Listen for server status events -----------------------------
+  window.addEventListener("server-unreachable", (event) => {
+    console.log("Server unreachable:", event.detail);
+    $(".network_status").removeClass("hidden");
+    $("#online_icon").addClass("hidden");
+    $(".network_status").html(
+      '<i class="bi bi-database-x"></i>Server is currently unreachable. Please try again later...',
+    );
+  });
+
+  window.addEventListener("server-reachable", (event) => {
+    $(".network_status").addClass("hidden");
+    $("#online_icon").removeClass("hidden");
+  });
 });

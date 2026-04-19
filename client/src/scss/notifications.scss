@@ -1,0 +1,59 @@
+#online_icon {
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
+  color: #4ed255;
+}
+
+.hidden {
+  display: none;
+}
+
+.network_status {
+  position: fixed;
+  top: 1px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: fit-content;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  z-index: 1000;
+  transition: all 0.3s ease;
+
+  i {
+    margin-right: 10px;
+  }
+
+  &.online {
+    background: #4caf50;
+    color: white;
+  }
+
+  &.offline {
+    background: #f44336;
+    color: white;
+    animation: slide_down 0.3s ease;
+  }
+}
+
+
+@keyframes slide_down {
+  from {
+    transform: translateY(-100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide_up {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-100%);
+  }
+}

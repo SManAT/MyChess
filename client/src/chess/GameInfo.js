@@ -19,6 +19,7 @@ export class GameInfo {
 
   render() {
     const infoElement = this.container;
+    console.log(infoElement);
 
     const { players, currentPlayer, gameStatus, moveHistory } = this.gameState;
     const playerList = Object.values(players);

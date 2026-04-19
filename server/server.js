@@ -36,7 +36,7 @@ if (process.env.DEBUG) {
 }
 
 //Database init
-DBINit({ init: false, backupData: true })
+DBINit({ init: false, backupData: false })
 // neue DB Struktur
 // Backups vorher löschen!
 //DBINit({ init: true, backupData: false })

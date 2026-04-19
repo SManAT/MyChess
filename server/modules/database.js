@@ -66,11 +66,11 @@ class SQLiteDatabase {
    */
   getGames(userid) {
     const ID = Number(userid)
-    let query = this.db.prepare(`SELECT games.id, name, stat, games.created_at, username, online FROM games
-                                  LEFT JOIN users
-                                  ON games.player2_id=users.id
-                                  WHERE player1_id=?`)
+    let query = this.db.prepare(`SELECT * FROM games WHERE id=?`)
     const result = query.all(ID)
+    //get Player names
+    this.db.getPlayerName(1)
+
     return result
   }
 
@@ -84,6 +84,24 @@ class SQLiteDatabase {
     let query = this.db.prepare(`SELECT name, stat, turn, created_at FROM games WHERE id=?`)
     const result = query.all(ID)
     return result
+  }
+
+  /**
+   * Get the opponent of the game
+   * @param {*} gameId
+   * @param {*} userId thats my ID
+   * @returns
+   */
+  getOtherPlayer(gameId, userId) {
+    const ID = Number(gameId)
+    const UID = Number(userId)
+    let query = this.db.prepare(`SELECT player1_id, player2_id FROM games WHERE id=?`)
+    const result = query.all(ID)
+    if (result[0].player1_id === UID) {
+      return result[0].player2_id
+    } else {
+      return result[0].player1_id
+    }
   }
 
   /**
@@ -117,8 +135,9 @@ class SQLiteDatabase {
 
   createNewGame(gamename, owner, player) {
     // Create a new game
+    const gameName = this.ensureUniqueGameName(gamename)
     const newGame = {
-      name: this.ensureUniqueGameName(gamename),
+      name: gameName,
       player1_id: parseInt(owner),
       player2_id: player,
       player1_inGame: 0,
