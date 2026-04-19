@@ -135,6 +135,7 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 server/DB/chessapp.db-shm
 server/DB/chessapp.db-wal
+server/DBbackups/**
 
 .env
 *.env
