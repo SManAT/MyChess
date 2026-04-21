@@ -40,6 +40,19 @@ class SQLiteDatabase {
     return user ? user.id : null
   }
 
+  getUserName(id) {
+    const stmt = this.db.prepare("SELECT username FROM users WHERE id = ?")
+    const user = stmt.get(id)
+    return user ? user.username : null
+  }
+
+  // get name and online status
+  getUserStats(id) {
+    const stmt = this.db.prepare("SELECT username, online FROM users WHERE id = ?")
+    const result = stmt.get(id)
+    return result ? result : null
+  }
+
   /**
    *
    * @returns Get all Users
@@ -66,18 +79,20 @@ class SQLiteDatabase {
    */
   getGames(userid) {
     const ID = Number(userid)
-    let query = this.db.prepare(`SELECT * FROM games WHERE id=?`)
-    const result = query.all(ID)
-    //get Player names
-    this.db.getPlayerName(1)
-
-    return result
+    let query
+    // entweder player1 oder 2
+    query = this.db.prepare(
+      `SELECT id, name, stat, created_at, player1_id, player2_id FROM games
+      WHERE player1_id=? OR player2_id=?`,
+    )
+    const games = query.all(ID, ID)
+    return games
   }
 
   /**
    * Statistik to games
    * @param {*} gameid
-   * @returns
+   * @return
    */
   getGamesStats(gameid) {
     const ID = Number(gameid)

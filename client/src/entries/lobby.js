@@ -245,10 +245,11 @@ $(function () {
         return momentB.diff(momentA); // Newest first
       });
 
+      console.log(allGames);
       sortedGames.forEach((game) => {
         //Opponent Online?
         let badge_color = "online";
-        if (game.online === false) {
+        if (game.otheronline === false) {
           badge_color = "offline";
         }
 
@@ -268,7 +269,7 @@ $(function () {
               <b>${game.name}</b>
               vs.
               <span class="onlinebadge ${badge_color}">
-                <span class="txt">${game.username}</span>
+                <span class="txt">${game.otherplayer}</span>
               </span>
             </div>
             <div>
@@ -355,6 +356,7 @@ $(function () {
   });
   //Username
   $(".user-dropdown>span").html(localStorage.getItem("username"));
+  $("#navusername>span").html(localStorage.getItem("username"));
 
   //--------------------------------------------------------------
   // Listen for server status events -----------------------------

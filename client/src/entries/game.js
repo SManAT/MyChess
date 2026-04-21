@@ -202,4 +202,6 @@ $(function () {
     $(".network_status").addClass("hidden");
     $("#online_icon").removeClass("hidden");
   });
+
+  $("#navusername>span").html(localStorage.getItem("username"));
 });

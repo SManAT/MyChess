@@ -59,6 +59,20 @@ const clientTalk = {
     const db = new SQLiteDatabase("./DB/chessapp.db", { verbose: false })
 
     let allgames = db.getGames(req.userid)
+    let game, otherplayerid, other
+
+    for (let i = 0; i < allgames.length; i++) {
+      game = allgames[i]
+      if (game.player1_id === req.userid) {
+        otherplayerid = game.player2_id
+      } else {
+        otherplayerid = game.player1_id
+      }
+      //add to allgames, name of other Player
+      other = db.getUserStats(otherplayerid)
+      game.otherplayer = other.username
+      game.otheronline = other.online
+    }
 
     return res.status(200).json({
       games: allgames,
