@@ -1,4 +1,3 @@
-// connectionManager.js - Enhanced version
 class ConnectionManager {
   constructor() {
     this.connections = new Map() // socketId -> connection data
