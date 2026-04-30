@@ -10,9 +10,13 @@ import $ from "jquery";
 window.$ = $;
 
 import api from "../utils/axiosApi.js";
+import tools from "../utils/tools.js";
 import socketManager from "../utils/socketManager.js";
 import { ChessBoard } from "../chess/ChessBoard.js";
 import { GameInfo } from "../chess/GameInfo.js";
+
+//User is logged in?
+tools.AuthGuard();
 
 class ChessApp {
   constructor() {
