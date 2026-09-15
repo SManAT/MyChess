@@ -41,10 +41,9 @@ def get_outdated_modules(npmPath):
 
         if result.returncode not in (0, 1):
             print("Error running 'npm outdated':", result.stderr)
-            return {}
+            return None
 
         if not result.stdout.strip():
-            print("All packages are up to date.")
             return {}
 
         data = json.loads(result.stdout)
@@ -53,17 +52,31 @@ def get_outdated_modules(npmPath):
     except Exception as e:
         print(f"Error: {e}")
         print(f"stderr: {getattr(e, 'stderr', 'N/A')}")
-        return {}
+        return None
 
 
-def update_module(module_name):
+def update_module(npmPath, module_name):
     print(f"Updating {module_name} to latest version...")
     try:
-        npm_path = "npm.cmd" if sys.platform == "win32" else "npm"
-        subprocess.run([npm_path, "install", f"{module_name}@latest"], check=True, shell=True)
+        subprocess.run([npmPath, "install", f"{module_name}@latest"], check=True, shell=True)
         print(f"{module_name} updated successfully.\n")
     except subprocess.CalledProcessError as e:
         print(f"Failed to update {module_name}: {e}\n")
+
+
+def print_outdated_table(outdated):
+    name_width = max([len(m) for m in outdated] + [len("Package")])
+    header = f"{'Package':<{name_width}}  {'Current':<12} {'Wanted':<12} {'Latest':<12}"
+    print(f"\n{len(outdated)} outdated package(s):\n")
+    print(header)
+    print("-" * len(header))
+
+    for module, info in outdated.items():
+        current = info.get("current", "unknown")
+        wanted = info.get("wanted", "unknown")
+        latest = info.get("latest", "unknown")
+        print(f"{module:<{name_width}}  {current:<12} {wanted:<12} {latest:<12}")
+    print()
 
 
 def main():
@@ -74,24 +87,31 @@ def main():
     print("\nGetting outdated modules...")
     outdated = get_outdated_modules(npmPath)
 
-    if not outdated:
+    if outdated is None:
+        print("\nCould not determine outdated modules.")
         return
 
-    for module, info in outdated.items():
-        current = info.get("current", "unknown")
-        wanted = info.get("wanted", "unknown")
-        latest = info.get("latest", "unknown")
+    if not outdated:
+        print("\nNothing to update - all packages are up to date.")
+        return
 
-        print(f"Module: {module}")
-        print(f"  Current: {current}")
-        print(f"  Wanted:  {wanted}")
-        print(f"  Latest:  {latest}")
+    print_outdated_table(outdated)
 
-        choice = input(f"Do you want to update '{module}' to version {latest}? [y/N]: ").strip().lower()
-        if choice == "y":
-            update_module(module)
-        else:
-            print(f"Skipped updating {module}.\n")
+    choice = input("Update [a]ll, choose [s]ingle packages, or [q]uit? [a/s/Q]: ").strip().lower()
+
+    if choice == "a":
+        for module, info in outdated.items():
+            update_module(npmPath, module)
+    elif choice == "s":
+        for module, info in outdated.items():
+            latest = info.get("latest", "unknown")
+            answer = input(f"Update '{module}' to version {latest}? [y/N]: ").strip().lower()
+            if answer == "y":
+                update_module(npmPath, module)
+            else:
+                print(f"Skipped updating {module}.\n")
+    else:
+        print("Nothing updated.")
 
 
 if __name__ == "__main__":
